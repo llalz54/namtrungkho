@@ -5,6 +5,7 @@ import ConDB.DBAccess;
 import DAO.CTPN_DATA;
 import DAO.NCC_DATA;
 import DAO.NHOMSP_DATA;
+import DAO.NumberDocumentFilter;
 import javax.swing.table.DefaultTableModel;
 import DAO.OTHER_DATA;
 import DAO.PHIEUNHAP_DATA;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.text.AbstractDocument;
 
 public class ChiTietNhapHang extends JPanel {
 
@@ -37,6 +39,8 @@ public class ChiTietNhapHang extends JPanel {
         OTHER_DATA.load_Cb_Brand(cb_Brand);
         OTHER_DATA.load_Cb_Supplier(cb_Supplier);
         txt_ngayNhap.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+         // Đặt DocumentFilter cho tf_giaXuat
+        ((AbstractDocument) txt_price.getDocument()).setDocumentFilter(new NumberDocumentFilter());
     }
 
     private void create_TB_CTPN(int quantity) {
@@ -227,6 +231,11 @@ public class ChiTietNhapHang extends JPanel {
                 txt_NgYeuCauActionPerformed(evt);
             }
         });
+        txt_NgYeuCau.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txt_NgYeuCauKeyTyped(evt);
+            }
+        });
 
         txt_SoHoaDon.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         txt_SoHoaDon.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Số hoá đơn", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 14))); // NOI18N
@@ -309,6 +318,30 @@ public class ChiTietNhapHang extends JPanel {
 
     private void btn_ConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ConfirmActionPerformed
         // TODO add your handling code here:
+       
+        String giaXuat = txt_price.getText().replace(".", "");
+        String nyc = txt_NgYeuCau.getText().trim();
+
+       
+        if (giaXuat.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập giá xuất.");
+            return;
+        }
+        if (nyc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập người yêu cầu xuất hàng.");
+            return;
+        }
+
+       
+     
+        long gia;
+        try {
+            gia = Long.parseLong(giaXuat);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Giá xuất không hợp lệ. Vui lòng nhập số nguyên.");
+            return;
+        }
+
         int quantity = Integer.parseInt(txt_Quantity.getText());
         create_TB_CTPN(quantity);
     }//GEN-LAST:event_btn_ConfirmActionPerformed
@@ -324,7 +357,16 @@ public class ChiTietNhapHang extends JPanel {
         int supplier_ID = ncc_Data.name_to_ID(supplier);
         String ngayNhap = txt_ngayNhap.getText().trim();
         int quantity = Integer.parseInt(txt_Quantity.getText());
-        int price = Integer.parseInt(txt_price.getText());
+        
+         long price;
+            try {
+                // Lấy text, xóa dấu chấm và chuyển thành số
+                String priceText = txt_price.getText().replace(".", "");
+                price = Long.parseLong(priceText);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Giá nhập không hợp lệ");
+                return;
+            }
 
         int currentUserId = Session.getInstance().getUserId();
         int categoryID = gr_Data.name_to_ID(grName);
@@ -342,7 +384,7 @@ public class ChiTietNhapHang extends JPanel {
             ps.setInt(2, categoryID);
             ps.setInt(3, supplier_ID);
             ps.setInt(4, quantity);
-            ps.setInt(5, price);
+            ps.setLong(5, price);
             ps.setString(6, ngayNhap);
             ps.setString(7, diaChiKho);
             ps.setString(8, soHD);
@@ -411,6 +453,18 @@ public class ChiTietNhapHang extends JPanel {
     private void txt_QuantityKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_QuantityKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_QuantityKeyTyped
+
+    private void txt_NgYeuCauKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_NgYeuCauKeyTyped
+      char c = evt.getKeyChar();
+        String input = txt_NgYeuCau.getText().trim();
+        // Nếu không phải số và không phải phím xóa (backspace), thì hủy ký tự nhập
+        if (c != '\b' && !Character.isLetter(c) ) {
+            evt.consume(); // chặn không cho nhập
+            java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập chữ cái!");
+        }
+        
+    }//GEN-LAST:event_txt_NgYeuCauKeyTyped
 
 //     */ @param args the command line arguments
 //     */
