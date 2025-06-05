@@ -40,6 +40,7 @@ namtrung\quanlykho\MainFrame.class
 namtrung\quanlykho\QuanLyKho$11.class
 namtrung\quanlykho\QuanLyNCC.class
 namtrung\quanlykho\XuatHang$3.class
+DAO\NumberDocumentFilter.class
 namtrung\quanlykho\QuanLyXuatHang$15.class
 DAO\SANPHAM_DATA.class
 namtrung\quanlykho\QuanLyNCC$9.class
@@ -50,6 +51,7 @@ namtrung\quanlykho\MainFrame$10.class
 namtrung\quanlykho\ChiTietNhapHang$2.class
 DTO\LOAISP.class
 namtrung\quanlykho\QuanLyNCC$1.class
+namtrung\quanlykho\ChiTietNhapHang$10.class
 namtrung\quanlykho\MainFrame$6.class
 namtrung\quanlykho\Login$1.class
 namtrung\quanlykho\XuatHang$13.class

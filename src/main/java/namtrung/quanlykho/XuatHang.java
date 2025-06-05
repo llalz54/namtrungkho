@@ -4,6 +4,7 @@ import ConDB.DBAccess;
 import DAO.LOAISP_DATA;
 import DAO.NCC_DATA;
 import DAO.NHOMSP_DATA;
+import DAO.NumberDocumentFilter;
 import DAO.OTHER_DATA;
 import DAO.PHIEUXUAT_DATA;
 import DAO.SANPHAM_DATA;
@@ -31,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AbstractDocument;
 
 /**
  *
@@ -52,6 +54,9 @@ public class XuatHang extends javax.swing.JPanel {
         OTHER_DATA.customTable(tb_SerialConfirm);
         OTHER_DATA.customTable(tb_SerialNCC);
         tf_ngayXuat.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        tf_ngayXuatHD.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        // Đặt DocumentFilter cho tf_giaXuat
+        ((AbstractDocument) tf_giaXuat.getDocument()).setDocumentFilter(new NumberDocumentFilter());
 
     }
 
@@ -320,7 +325,16 @@ public class XuatHang extends javax.swing.JPanel {
                     break;
                 }
             }
-            long price = Long.parseLong(tf_giaXuat.getText().trim());
+
+            long price;
+            try {
+                // Lấy text, xóa dấu chấm và chuyển thành số
+                String priceText = tf_giaXuat.getText().replace(".", "");
+                price = Long.parseLong(priceText);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Giá xuất không hợp lệ");
+                return;
+            }
             String customer = tf_khachHang.getText().trim();
             String address = tf_diaChi.getText().trim();
             String NYC = tf_NYC.getText().trim();
@@ -705,7 +719,7 @@ public class XuatHang extends javax.swing.JPanel {
 
     private void btn_XacNhanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_XacNhanActionPerformed
         String soLuongStr = tf_soLuong.getText().trim();
-        String giaXuat = tf_giaXuat.getText().trim();
+        String giaXuat = tf_giaXuat.getText().replace(".", "");
         String nyc = tf_NYC.getText().trim();
 
         if (soLuongStr.isEmpty()) {
@@ -728,6 +742,7 @@ public class XuatHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ. Vui lòng nhập số nguyên.");
             return;
         }
+     
         long gia;
         try {
             gia = Long.parseLong(giaXuat);
@@ -735,7 +750,6 @@ public class XuatHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Giá xuất không hợp lệ. Vui lòng nhập số nguyên.");
             return;
         }
-        
 
         String tenLoaiSP = (String) cb_TenSP.getSelectedItem();
 
@@ -765,7 +779,7 @@ public class XuatHang extends javax.swing.JPanel {
             evt.consume(); // chặn không cho nhập
             java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
             JOptionPane.showMessageDialog(this, "Vui lòng nhập số nguyên!");
-            
+
         }
     }//GEN-LAST:event_tf_giaXuatKeyTyped
 
@@ -792,12 +806,12 @@ public class XuatHang extends javax.swing.JPanel {
         char c = evt.getKeyChar();
         String input = tf_NYC.getText().trim();
         // Nếu không phải số và không phải phím xóa (backspace), thì hủy ký tự nhập
-        if (c != '\b' && !Character.isLetter(c) ) {
+        if (c != '\b' && !Character.isLetter(c)) {
             evt.consume(); // chặn không cho nhập
             java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chữ cái!");
         }
-        
+
     }//GEN-LAST:event_tf_NYCKeyTyped
 
     /**
