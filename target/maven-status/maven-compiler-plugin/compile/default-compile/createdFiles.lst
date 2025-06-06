@@ -32,6 +32,7 @@ namtrung\quanlykho\QuanLyXuatHang$11.class
 namtrung\quanlykho\QuanLyKho$6.class
 DAO\LOAISP_DATA.class
 namtrung\quanlykho\DSPhieuNhap$4.class
+namtrung\quanlykho\TaiKhoan.class
 namtrung\quanlykho\DSPhieuNhap$6.class
 namtrung\quanlykho\QuanLyKho$3.class
 DAO\PHIEUXUAT_DATA.class
@@ -123,6 +124,7 @@ namtrung\quanlykho\XuatHang$11.class
 DTO\PHIEUNHAP.class
 namtrung\quanlykho\MainFrame$8.class
 namtrung\quanlykho\DSPhieuNhap$11.class
+namtrung\quanlykho\TaiKhoan$1.class
 DAO\GroupItem.class
 namtrung\quanlykho\DSPhieuNhap$9.class
 DTO\SANPHAM.class

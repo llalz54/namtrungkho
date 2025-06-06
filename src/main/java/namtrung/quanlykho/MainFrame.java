@@ -2,7 +2,9 @@ package namtrung.quanlykho;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -25,10 +27,27 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         applyDefaultUIStyle();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1500, 800);
+        // Lấy kích thước màn hình
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        // Tính toán kích thước tối đa (90% màn hình hoặc 1500x800, tùy cái nào nhỏ hơn)
+        int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
+        int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
+
+        // Thiết lập kích thước
+        setSize(maxWidth, maxHeight);
         setLocationRelativeTo(null); // căn giữa màn hình
-        this.setVisible(true);
+
+        // Thiết lập icon
+        try {
+            java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo.png"));
+            this.setIconImage(icon);
+        } catch (Exception e) {
+            System.err.println("Không thể tải icon: " + e.getMessage());
+        }
         showPanel(new ChiTietNhapHang());
+        this.setVisible(true);
+
     }
 
     Color defaultColor = new Color(89, 168, 105);
@@ -56,8 +75,8 @@ public class MainFrame extends javax.swing.JFrame {
 
             // Button
             UIManager.put("Button.background", Color.WHITE);
-            UIManager.put("Button.foreground", Color.BLACK);            
-            
+            UIManager.put("Button.foreground", Color.BLACK);
+
             // TextField (nếu cần)
             UIManager.put("TextField.background", Color.WHITE);
             UIManager.put("TextField.foreground", Color.BLACK);
@@ -619,16 +638,16 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void pn_OpenTaiKhoanMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pn_OpenTaiKhoanMouseMoved
         // TODO add your handling code here:
-          pn_OpenTaiKhoan.setBackground(clickColor);
+        pn_OpenTaiKhoan.setBackground(clickColor);
     }//GEN-LAST:event_pn_OpenTaiKhoanMouseMoved
 
     private void pn_OpenTaiKhoanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pn_OpenTaiKhoanMouseClicked
-        // TODO add your handling code here:
+        showPanel(new TaiKhoan());
     }//GEN-LAST:event_pn_OpenTaiKhoanMouseClicked
 
     private void pn_OpenTaiKhoanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pn_OpenTaiKhoanMouseExited
         // TODO add your handling code here:
-          pn_OpenTaiKhoan.setBackground(defaultColor);
+        pn_OpenTaiKhoan.setBackground(defaultColor);
     }//GEN-LAST:event_pn_OpenTaiKhoanMouseExited
 
     /**
