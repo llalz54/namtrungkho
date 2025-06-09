@@ -16,6 +16,7 @@ public class CONNECTION {
             Connection con = DriverManager.getConnection(URL);
             return con;
         } catch (SQLException ex) {
+            System.out.println(ex);
             JOptionPane.showMessageDialog(null, ex);
             return null;
         }
