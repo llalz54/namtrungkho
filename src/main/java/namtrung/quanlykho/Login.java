@@ -10,6 +10,13 @@ public class Login extends javax.swing.JFrame {
 
     public Login() {
         initComponents();
+        getRootPane().setDefaultButton(btnLogin);
+         try {
+            java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/products.png"));
+            this.setIconImage(icon);
+        } catch (Exception e) {
+            System.err.println("Không thể tải icon: " + e.getMessage());
+        }
     }
 
     /**
@@ -41,6 +48,11 @@ public class Login extends javax.swing.JFrame {
 
         txtPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         txtPassword.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Password", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Times New Roman", 1, 16))); // NOI18N
+        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPasswordActionPerformed(evt);
+            }
+        });
         jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, 296, -1));
 
         btnLogin.setFont(new java.awt.Font("Times New Roman", 1, 17)); // NOI18N
@@ -116,6 +128,10 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.toString(), "Lỗi!!!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+        btnLogin.doClick();
+    }//GEN-LAST:event_txtPasswordActionPerformed
 
     /**
      * @param args the command line arguments

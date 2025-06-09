@@ -34,14 +34,12 @@ namtrung\quanlykho\QuanLyXuatHang$11.class
 namtrung\quanlykho\QuanLyKho$6.class
 DAO\LOAISP_DATA.class
 namtrung\quanlykho\DSPhieuNhap$4.class
-<<<<<<< HEAD
 namtrung\quanlykho\TaiKhoan.class
-=======
 utils\IntHelper.class
->>>>>>> f2ff9c231cb6df888c7bc3434f7199114d01733d
 namtrung\quanlykho\DSPhieuNhap$6.class
 namtrung\quanlykho\QuanLyKho$3.class
 DAO\PHIEUXUAT_DATA.class
+DTO\ProductInfo.class
 namtrung\quanlykho\XuatHang$14.class
 namtrung\quanlykho\MainFrame.class
 namtrung\quanlykho\QuanLyKho$11.class
@@ -101,6 +99,7 @@ namtrung\quanlykho\NhomSP$7.class
 namtrung\quanlykho\XuatHang$9.class
 namtrung\quanlykho\ChiTietNhapHang.class
 namtrung\quanlykho\NhomSP$5.class
+namtrung\quanlykho\Login$3.class
 namtrung\quanlykho\QuanLyNCC$4.class
 DAO\Session.class
 namtrung\quanlykho\DSPhieuNhap.class

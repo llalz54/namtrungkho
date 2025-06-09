@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
 /**
@@ -30,13 +31,18 @@ public class MainFrame extends javax.swing.JFrame {
         // Lấy kích thước màn hình
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+        //this.setMinimumSize(new Dimension(1500, 800)); // Giới hạn nhỏ nhất
+        // this.setExtendedState(JFrame.MAXIMIZED_BOTH); // Tự mở rộng ra hết màn hình
         // Tính toán kích thước tối đa (90% màn hình hoặc 1500x800, tùy cái nào nhỏ hơn)
-        this.setMinimumSize(new Dimension(1200, 700)); // Giới hạn nhỏ nhất
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH); // Tự mở rộng ra hết màn hình
-        setLocationRelativeTo(null);
+        int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
+        int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
+
+        // Thiết lập kích thước
+        setSize(maxWidth, maxHeight);
+        setLocationRelativeTo(null); // căn giữa màn hình
         // Thiết lập icon
         try {
-            java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo.png"));
+            java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/products.png"));
             this.setIconImage(icon);
         } catch (Exception e) {
             System.err.println("Không thể tải icon: " + e.getMessage());
@@ -49,10 +55,27 @@ public class MainFrame extends javax.swing.JFrame {
     Color clickColor = new Color(26, 188, 156);
 
     public void showPanel(JPanel panel) {
-        panelShow.removeAll();              // Xóa panel cũ
-        panelShow.setLayout(new BorderLayout());
-        panelShow.add(panel); // Thêm panel mới
-        panelShow.revalidate();             // Làm mới hiển thị
+        //  panel.setPreferredSize(new Dimension(1500, 800)); // Kích thước chuẩn mong muốn
+
+        // JScrollPane scrollPane = new JScrollPane(panel);
+        // panelShow.add(scrollPane);
+        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        // panelShow.removeAll();              // Xóa panel cũ
+        //  panelShow.setLayout(new BorderLayout());
+        // panelShow.add(panel); // Thêm panel mới
+        //  panelShow.revalidate();             // Làm mới hiển thị
+        //  panelShow.repaint();
+        panel.setPreferredSize(new Dimension(1200, 700)); // Kích thước cố định có thể cuộn nếu tràn
+
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        panelShow.removeAll();                      // Xóa nội dung cũ
+        panelShow.setLayout(new BorderLayout());   // Đặt layout
+        panelShow.add(scrollPane, BorderLayout.CENTER); // Chỉ thêm scrollPane
+        panelShow.revalidate();                    // Cập nhật lại giao diện
         panelShow.repaint();
     }
 
@@ -442,13 +465,16 @@ public class MainFrame extends javax.swing.JFrame {
         pn_OpenTaiKhoanLayout.setHorizontalGroup(
             pn_OpenTaiKhoanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pn_OpenTaiKhoanLayout.createSequentialGroup()
-                .addGap(48, 48, 48)
+                .addGap(64, 64, 64)
                 .addComponent(lb_TaiKhoan)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pn_OpenTaiKhoanLayout.setVerticalGroup(
             pn_OpenTaiKhoanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lb_TaiKhoan, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pn_OpenTaiKhoanLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lb_TaiKhoan, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pn_OpenGrSP.setBackground(new java.awt.Color(89, 168, 105));
