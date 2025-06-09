@@ -39,7 +39,7 @@ public class ChiTietNhapHang extends JPanel {
         OTHER_DATA.load_Cb_Brand(cb_Brand);
         OTHER_DATA.load_Cb_Supplier(cb_Supplier);
         txt_ngayNhap.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-         // Đặt DocumentFilter cho tf_giaXuat
+        // Đặt DocumentFilter cho tf_giaXuat
         ((AbstractDocument) txt_price.getDocument()).setDocumentFilter(new NumberDocumentFilter());
     }
 
@@ -318,11 +318,10 @@ public class ChiTietNhapHang extends JPanel {
 
     private void btn_ConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ConfirmActionPerformed
         // TODO add your handling code here:
-       
+
         String giaXuat = txt_price.getText().replace(".", "");
         String nyc = txt_NgYeuCau.getText().trim();
 
-       
         if (giaXuat.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập giá xuất.");
             return;
@@ -332,8 +331,6 @@ public class ChiTietNhapHang extends JPanel {
             return;
         }
 
-       
-     
         long gia;
         try {
             gia = Long.parseLong(giaXuat);
@@ -357,16 +354,16 @@ public class ChiTietNhapHang extends JPanel {
         int supplier_ID = ncc_Data.name_to_ID(supplier);
         String ngayNhap = txt_ngayNhap.getText().trim();
         int quantity = Integer.parseInt(txt_Quantity.getText());
-        
-         long price;
-            try {
-                // Lấy text, xóa dấu chấm và chuyển thành số
-                String priceText = txt_price.getText().replace(".", "");
-                price = Long.parseLong(priceText);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Giá nhập không hợp lệ");
-                return;
-            }
+
+        long price;
+        try {
+            // Lấy text, xóa dấu chấm và chuyển thành số
+            String priceText = txt_price.getText().replace(".", "");
+            price = Long.parseLong(priceText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Giá nhập không hợp lệ");
+            return;
+        }
 
         int currentUserId = Session.getInstance().getUserId();
         int categoryID = gr_Data.name_to_ID(grName);
@@ -455,15 +452,15 @@ public class ChiTietNhapHang extends JPanel {
     }//GEN-LAST:event_txt_QuantityKeyTyped
 
     private void txt_NgYeuCauKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_NgYeuCauKeyTyped
-      char c = evt.getKeyChar();
+        char c = evt.getKeyChar();
         String input = txt_NgYeuCau.getText().trim();
         // Nếu không phải số và không phải phím xóa (backspace), thì hủy ký tự nhập
-        if (c != '\b' && !Character.isLetter(c) ) {
+        if (c != '\b' && !Character.isLetter(c)) {
             evt.consume(); // chặn không cho nhập
             java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chữ cái!");
         }
-        
+
     }//GEN-LAST:event_txt_NgYeuCauKeyTyped
 
 //     */ @param args the command line arguments

@@ -29,6 +29,7 @@ public class TaiKhoan extends javax.swing.JPanel {
         check_Role();
     }
 
+
     private void check_Role() {
         String role = Session.getInstance().getRole();
         if (!"admin".equalsIgnoreCase(role)) {

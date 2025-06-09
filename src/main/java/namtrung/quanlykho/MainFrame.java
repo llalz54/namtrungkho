@@ -31,13 +31,9 @@ public class MainFrame extends javax.swing.JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         // Tính toán kích thước tối đa (90% màn hình hoặc 1500x800, tùy cái nào nhỏ hơn)
-        int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
-        int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
-
-        // Thiết lập kích thước
-        setSize(maxWidth, maxHeight);
-        setLocationRelativeTo(null); // căn giữa màn hình
-
+        this.setMinimumSize(new Dimension(1200, 700)); // Giới hạn nhỏ nhất
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); // Tự mở rộng ra hết màn hình
+        setLocationRelativeTo(null);
         // Thiết lập icon
         try {
             java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo.png"));
@@ -47,7 +43,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
         showPanel(new ChiTietNhapHang());
         this.setVisible(true);
-
     }
 
     Color defaultColor = new Color(89, 168, 105);
