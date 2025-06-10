@@ -27,6 +27,8 @@ public class QuanLyNCC extends javax.swing.JPanel {
 
     private String action_QLNCC = "";
     private int current_supplierID;
+    private String current_name;
+    private String current_suggestName;
 
     private void clearTXT() {
         txt_Name.setText("");
@@ -42,10 +44,18 @@ public class QuanLyNCC extends javax.swing.JPanel {
         txt_diaChi.setEnabled(true);
         cb_Status.setEnabled(true);
     }
-    
-    private void check_Role(){
+
+    private void completeSave() {
+        clearTXT();
+        enableTXT();
+        action_QLNCC = "";
+        tb_Supplier.clearSelection();
+        loadDataTable_DSNCC();
+    }
+
+    private void check_Role() {
         String role = Session.getInstance().getRole();
-        if(!"admin".equalsIgnoreCase(role)){
+        if (!"admin".equalsIgnoreCase(role)) {
             pn_funtion.setVisible(false);
         }
     }
@@ -118,7 +128,7 @@ public class QuanLyNCC extends javax.swing.JPanel {
         }
         tb_Supplier.setModel(dtm);
     }
-    
+
     private void loadDataTable_NCC_Search(String name) {
         DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
         dtm.setNumRows(0);
@@ -362,7 +372,7 @@ public class QuanLyNCC extends javax.swing.JPanel {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Tên", "Tên gợi nhớ", "Mã số thuế", "Địa chỉ", "Trạng thái"
+                "Tên gợi nhớ", "Tên", "Mã số thuế", "Địa chỉ", "Trạng thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -461,15 +471,16 @@ public class QuanLyNCC extends javax.swing.JPanel {
             txt_MST.setEnabled(false);
             txt_diaChi.setEnabled(false);
             cb_Status.setEnabled(false);
-            DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
-            String supplierName = dtm.getValueAt(i, 0).toString();
-            current_supplierID = ncc_data.name_to_ID(supplierName);
         }
     }//GEN-LAST:event_btn_DeleteActionPerformed
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         // TODO add your handling code here:
         try {
+            if (action_QLNCC == null || action_QLNCC.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             String name = txt_Name.getText().trim();
             String suggestName = txt_tenGoiNho.getText().trim();
             String MST = txt_MST.getText().trim();
@@ -480,34 +491,24 @@ public class QuanLyNCC extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Hãy điền đầy đủ thông tin!", "Input warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (action_QLNCC.equals("create")) {
-                if (ncc_data.checkName_NCC(name, suggestName) == true) {
-                    JOptionPane.showMessageDialog(this, "Tên hoặc tên gới nhớ nhà cung cấp bị trùng!", "Input warning", JOptionPane.WARNING_MESSAGE);
-                    return;
+            switch (action_QLNCC) {
+                case "create" -> {
+                    ncc_data.create_Supplier(suggestName, name, MST, address, status);
+                    completeSave();
                 }
-                ncc_data.create_Supplier(name, suggestName, MST, address, status);
-                loadDataTable_DSNCC();
-                clearTXT();
-
-            } else if (action_QLNCC.equals("update")) {
-                boolean check = true;
-                if (check == true) {
-                    ncc_data.update_Supplier(current_supplierID, name, suggestName, MST, address, status);
-                    loadDataTable_DSNCC();
-                    clearTXT();
-                    tb_Supplier.clearSelection();
+                case "update" -> {
+                    ncc_data.update_Supplier(current_supplierID, suggestName, current_suggestName, name, current_name, MST, address, status);
+                    completeSave();
                 }
+                case "delete" -> {
+                    ncc_data.delete_GrProduct(current_supplierID);
+                    completeSave();
 
-            } else if (action_QLNCC.equals("delete")) {
-                ncc_data.delete_Supplier(current_supplierID);
-                loadDataTable_DSNCC();
-                clearTXT();
-                enableTXT();
-                tb_Supplier.clearSelection();
-
-            } else {
-                JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                }
+                default ->
+                    JOptionPane.showMessageDialog(this, "Hành động không hợp lệ !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
             }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi ghi nhà cung cấp", "ERROR!", JOptionPane.ERROR_MESSAGE);
         }
@@ -526,11 +527,16 @@ public class QuanLyNCC extends javax.swing.JPanel {
         // TODO add your handling code here:
         int i = tb_Supplier.getSelectedRow();
         DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
-        txt_Name.setText(dtm.getValueAt(i, 0).toString());
-        txt_tenGoiNho.setText(dtm.getValueAt(i, 1).toString());
+        current_suggestName = dtm.getValueAt(i, 0).toString().trim();
+        current_name = dtm.getValueAt(i, 1).toString().trim();
+
+        txt_Name.setText(current_name);
+        txt_tenGoiNho.setText(current_suggestName);
         txt_MST.setText(dtm.getValueAt(i, 2).toString());
         txt_diaChi.setText(dtm.getValueAt(i, 3).toString());
         cb_Status.setSelectedItem(dtm.getValueAt(i, 4).toString());
+
+        current_supplierID = ncc_data.name_to_ID(current_suggestName);
     }//GEN-LAST:event_tb_SupplierMouseClicked
 
     private void btn_UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_UpdateActionPerformed
@@ -539,10 +545,6 @@ public class QuanLyNCC extends javax.swing.JPanel {
         int i = tb_Supplier.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn nhà cung cấp để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
-        } else {
-            DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
-            String supplierName = dtm.getValueAt(i, 0).toString();
-            current_supplierID = ncc_data.name_to_ID(supplierName);
         }
     }//GEN-LAST:event_btn_UpdateActionPerformed
 

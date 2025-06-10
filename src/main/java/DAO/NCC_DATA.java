@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import utils.StringHelper;
 
 /**
  *
@@ -83,33 +84,116 @@ public class NCC_DATA {
     }
 
     public static void create_Supplier(String name, String fullName, String MST, String address, String status) {
-        Connection conn = CONNECTION.getConnection();
-        String sql = "insert into NCC values(?,?,?,?,?)";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, name);
-            ps.setString(2, fullName);
-            ps.setString(3, MST);
-            ps.setString(4, address);
-            ps.setString(5, status);
+        if (StringHelper.isNullOrBlank(name)) {
+            JOptionPane.showMessageDialog(null, "Tên gợi nhớ nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(fullName)) {
+            JOptionPane.showMessageDialog(null, "Tên nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(MST)) {
+            JOptionPane.showMessageDialog(null, "Mã số thuế nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-            ps.executeUpdate();
+        try (Connection conn = CONNECTION.getConnection()) {
 
-            JOptionPane.showMessageDialog(null, "Thêm nhà cung cấp thành công!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Lỗi thêm NCC!", "ERROR!", JOptionPane.ERROR_MESSAGE);
+            // Kiểm tra trùng tên (không phân biệt hoa thường)
+            String checkSql = "SELECT 1 FROM NCC WHERE LOWER(name) = LOWER(?) OR LOWER(fullname) = LOWER(?)";
+            try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+                checkPs.setString(1, name);
+                checkPs.setString(2, fullName);
+                ResultSet rs = checkPs.executeQuery();
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null,
+                            "Tên hoặc tên gợi nhớ nhà cung cấp đã tồn tại.",
+                            "Trùng tên", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+
+            // Xác nhận thêm mới
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Bạn có chắc chắn muốn thêm nhóm sản phẩm này?",
+                    "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            // Thực hiện thêm mới
+            String insertSql = "INSERT INTO NCC (name, fullname, MST, address, status) VALUES (?,?,?,?,?)";
+            try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                ps.setString(1, StringHelper.safeTrim(name));
+                ps.setString(2, StringHelper.safeTrim(fullName));
+                ps.setString(3, StringHelper.safeTrim(MST));
+                ps.setString(4, StringHelper.safeTrim(address));
+                ps.setString(5, StringHelper.safeTrim(status));
+                int rows = ps.executeUpdate();
+                JOptionPane.showMessageDialog(null,
+                        rows > 0 ? "Thêm nhà cung cấp thành công!" : "Không thêm được nhà cung cấp.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi thêm nhà cung cấp: " + e.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
 
-    public static void update_Supplier(int id, String name, String fullName, String MST, String address, String status) {
-        Connection conn = null;
-        PreparedStatement ps = null;
+    public static void update_Supplier(int id, String name, String oldName, String fullName, String oldFullName, String MST, String address, String status) {
+        if (StringHelper.isNullOrBlank(name)) {
+            JOptionPane.showMessageDialog(null, "Tên gợi nhớ nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(fullName)) {
+            JOptionPane.showMessageDialog(null, "Tên nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(MST)) {
+            JOptionPane.showMessageDialog(null, "Mã số thuế nhà cung cấp không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Nếu tên mới khác tên cũ thì kiểm tra trùng lặp
+        if (!name.equalsIgnoreCase(oldName) || !fullName.equalsIgnoreCase(oldFullName)) {
+            String checkSql = "SELECT 1 FROM NCC WHERE (name = ? OR fullname = ?) AND supplier_id != ?";
+            try (
+                    Connection conn = CONNECTION.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+                checkPs.setString(1, name);
+                checkPs.setString(2, fullName);
+                checkPs.setInt(3, id);
+                ResultSet rs = checkPs.executeQuery();
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null,
+                            "Tên hoặc tên nhà cung cấp đã tồn tại. Vui lòng chọn tên khác.",
+                            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Lỗi kiểm tra tên nhà cung cấp: " + e.getMessage(),
+                        "ERROR!", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+                return;
+            }
+        }
+        // Hỏi xác nhận trước khi sửa
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Bạn có chắc chắn muốn sửa nhà cung cấp này?",
+                "Xác nhận sửa", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-        try {
-            conn = CONNECTION.getConnection();
-            String sql = "UPDATE NCC SET name = ?, fullname = ?, MST = ?, address = ?, status = ? WHERE supplier_id= ?";
-            ps = conn.prepareStatement(sql);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Người dùng không đồng ý, thoát hàm
+        }
+        String sql = "UPDATE NCC SET name = ?, fullname = ?, MST = ?, address = ?, status = ? WHERE supplier_id= ?";
+        try (
+                Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, name);
             ps.setString(2, fullName);
             ps.setString(3, MST);
@@ -117,99 +201,83 @@ public class NCC_DATA {
             ps.setString(5, status);
             ps.setInt(6, id);
 
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Sửa nhà cung cấp thành công!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Lỗi sửa nhà cung cấp!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void delete_Supplier(int id) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = CONNECTION.getConnection();
-            Boolean result = check_HD_NCC(id);
-            if (result == null) {
-                JOptionPane.showMessageDialog(null, "Lỗi kiểm tra dữ liệu nhà cung cấp!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (!result) {
-                String sql = "DELETE FROM NCC WHERE supplier_id = ?";
-                ps = conn.prepareStatement(sql);
-                ps.setInt(1, id);
-                ps.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Xoá nhà cung cấp thành công!");
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(null, "Sửa nhà cung cấp thành công!");
             } else {
-                String sql = "UPDATE NCC SET status = 0 WHERE supplier_id = ?";
-                ps = conn.prepareStatement(sql);
-                ps.setInt(1, id);
-                ps.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Nhà cung cấp này đã được ghi phiếu nhập => Thay đổi trạng thái!");
+                JOptionPane.showMessageDialog(null,
+                        "Không tìm thấy nhà cung cấp để cập nhật.",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Lỗi thao tác với nhà cung cấp!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static Boolean check_HD_NCC(int id) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = CONNECTION.getConnection();
-            String sql = "SELECT TOP 1 1 FROM PhieuNhap WHERE supplier_id = ?";
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, id);
-            rs = ps.executeQuery();
-
-            return rs.next(); // Trả về true nếu có ít nhất 1 dòng
 
         } catch (Exception e) {
-            System.out.println("Lỗi hàm kiểm tra hoạt động Nhà cung cấp!");
+            JOptionPane.showMessageDialog(null, "Lỗi sữa nhà cung cấp: " + e.getMessage(), "ERROR!", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-            return null;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        }
+
+    }
+    
+    public static void delete_GrProduct(int id) {
+        try {
+            // 1. Hỏi xác nhận người dùng
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Bạn có chắc chắn muốn xóa nhà cung cấp này?",
+                    "Xác nhận xóa", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // Người dùng chọn "Không" => thoát hàm, không xóa
             }
+
+            // 2. Kiểm tra xem supplier_id có đang được sử dụng không
+            boolean isUsed = isSupplierIdInUse(id);
+
+            // 3. Chọn câu SQL và thông điệp phù hợp
+            String sql = isUsed
+                    ? "UPDATE NCC SET status = 0 WHERE supplier_id = ?"
+                    : "DELETE FROM NCC WHERE supplier_id = ?";
+
+            String message = isUsed
+                    ? "Nhà cung cấp đang được sử dụng, đã chuyển sang trạng thái 'BỊ XOÁ'."
+                    : "Xóa nhà cung cấp thành công!";
+
+            // 4. Thực hiện câu lệnh
+            try (Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, id);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Không tìm thấy nhà cung cấp để xử lý.",
+                            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Đã xảy ra lỗi khi xử lý xóa nhà cung cấp:\n" + e.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static boolean isSupplierIdInUse(int id) {
+        String sql = "SELECT TOP 1 1 FROM PhieuNhap WHERE supplier_id = ?";
+        try (Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu đang được sử dụng
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Đã xảy ra lỗi khi kiểm tra supplier_In_Use:\n" + e.getMessage(),
+                    "Lỗi kiểm tra dữ liệu",
+                    JOptionPane.ERROR_MESSAGE);
+            return true;
         }
     }
 

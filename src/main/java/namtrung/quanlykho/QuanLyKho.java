@@ -35,33 +35,34 @@ public class QuanLyKho extends javax.swing.JPanel {
         loadCB_Status();
         customControls();
     }
-
+    
     private LOAISP_DATA loaisp_data = new LOAISP_DATA();
     private NHOMSP_DATA nhomsp_data = new NHOMSP_DATA();
     private OTHER_DATA other_data = new OTHER_DATA();
-
+    
     private String action_QLLSP = "";
+    private String current_Name;
     private int current_cateID;
-
+    
     private void check_Role() {
         String role = Session.getInstance().getRole();
         if (!"admin".equalsIgnoreCase(role)) {
             pn_QLSP.setVisible(false);
         }
     }
-
+    
     private void customControls() {
         tfTimKiem.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 btn_Search.doClick();
             }
-
+            
             @Override
             public void removeUpdate(DocumentEvent e) {
                 btn_Search.doClick();
             }
-
+            
             @Override
             public void changedUpdate(DocumentEvent e) {
                 btn_Search.doClick();
@@ -69,7 +70,15 @@ public class QuanLyKho extends javax.swing.JPanel {
         });
         btn_Search.setVisible(false);
     }
-
+    
+    private void completeSave(){
+        txt_Name.setText("");
+        txt_Name.setEnabled(true);
+        cb_Status.setEnabled(true);
+        
+        tb_DSSP.clearSelection();
+    }
+    
     private String convertStatus(String status) {
         String trangThai;
         switch (status) {
@@ -85,7 +94,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         }
         return trangThai;
     }
-
+    
     private String convertTrangThai(String trangThai) {
         String status;
         switch (trangThai) {
@@ -101,7 +110,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         }
         return status;
     }
-
+    
     private void loadCB_Status() {
         cb_Status.removeAllItems();
         try {
@@ -116,7 +125,7 @@ public class QuanLyKho extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Lỗi loadCB_Status!", "ERROR!", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
     private void loadDataTable_DSLSP(String grName, String brand) {
         loaisp_data.docListLoaiSP();
         DefaultTableModel dtm = (DefaultTableModel) tb_DSSP.getModel();
@@ -136,7 +145,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         }
         tb_DSSP.setModel(dtm);
     }
-
+    
     private void loadDataTable_DSTonKho(String status, int categoryID) {
         NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
         DefaultTableModel dtm = (DefaultTableModel) tb_DSSP_Serial.getModel();
@@ -164,13 +173,13 @@ public class QuanLyKho extends javax.swing.JPanel {
                 + "WHERE sp.status = ?\n"
                 + "  AND sp.category_id = ?\n"
                 + "ORDER BY fp.ngayNhap ASC;";
-
+        
         try (Connection conn = CONNECTION.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-
+            
             stmt.setString(1, status);
             stmt.setInt(2, categoryID);
             ResultSet rs = stmt.executeQuery();
-
+            
             boolean hasData = false;
             while (rs.next()) {
                 hasData = true;
@@ -517,8 +526,12 @@ public class QuanLyKho extends javax.swing.JPanel {
         // TODO add your handling code here:
         int i = tb_DSSP.getSelectedRow();
         DefaultTableModel dtm = (DefaultTableModel) tb_DSSP.getModel();
-        txt_Name.setText(dtm.getValueAt(i, 1).toString());
+        
+        current_Name = dtm.getValueAt(i, 1).toString();
+        txt_Name.setText(current_Name);
         cb_Status.setSelectedItem(dtm.getValueAt(i, 3).toString());
+        
+        current_cateID = loaisp_data.name_to_ID(current_Name);
     }//GEN-LAST:event_tb_DSSPMouseClicked
 
     private void cb_GrProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_GrProductActionPerformed
@@ -549,6 +562,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         txt_Name.setText("");
         txt_Name.setEditable(true);
         cb_Status.setEnabled(false);
+        cb_Status.setSelectedItem("Đang bán");        
     }//GEN-LAST:event_btn_CreateActionPerformed
 
     private void btn_UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_UpdateActionPerformed
@@ -557,10 +571,6 @@ public class QuanLyKho extends javax.swing.JPanel {
         int i = tb_DSSP.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn sản phẩm để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
-        } else {
-            DefaultTableModel dtm = (DefaultTableModel) tb_DSSP.getModel();
-            String cateName = dtm.getValueAt(i, 1).toString();
-            current_cateID = loaisp_data.name_to_ID(cateName);
         }
     }//GEN-LAST:event_btn_UpdateActionPerformed
 
@@ -573,15 +583,17 @@ public class QuanLyKho extends javax.swing.JPanel {
         } else {
             txt_Name.setEnabled(false);
             cb_Status.setEnabled(false);
-            DefaultTableModel dtm = (DefaultTableModel) tb_DSSP.getModel();
-            String cateName = dtm.getValueAt(i, 1).toString();
-            current_cateID = loaisp_data.name_to_ID(cateName);
+            
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         // TODO add your handling code here:
-        try {
+        try {            
+            if (action_QLLSP == null || action_QLLSP.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             String grName = cb_GrProduct.getSelectedItem().toString();
             int grID = nhomsp_data.name_to_ID(grName);
             String brand = cb_Brand.getSelectedItem().toString();
@@ -592,36 +604,24 @@ public class QuanLyKho extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Hãy điền đầy đủ thông tin!", "Input warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (action_QLLSP.equals("create")) {
-                boolean check = true;
-                if (loaisp_data.checkName_LSP(name) == true) {
-                    JOptionPane.showMessageDialog(this, "Tên sản phẩm bị trùng!", "Input warning", JOptionPane.WARNING_MESSAGE);
-                    check = false;
-                }
-                if (check == true) {
+            switch (action_QLLSP) {
+                case "create" -> {
                     loaisp_data.create_LSP(grID, name, "1", brand);
+                    completeSave();
                     loadDataTable_DSLSP(grName, brand);
-                    txt_Name.setText("");
                 }
-            } else if (action_QLLSP.equals("update")) {
-                boolean check = true;
-                //regex sau                
-                if (check == true) {
-                    loaisp_data.update_LSP(current_cateID, grID, name, status, brand);
+                case "update" -> {
+                    loaisp_data.update_GrProduct(current_cateID, grID, name, status, brand);
+                    completeSave();
                     loadDataTable_DSLSP(grName, brand);
-                    tb_DSSP.clearSelection();
                 }
-            } else if (action_QLLSP.equals("delete")) {
-                boolean check = true;
-                if (check == true) {
-                    loaisp_data.delete_LSP(current_cateID);
+                case "delete" -> {
+                    loaisp_data.delete_GrProduct(current_cateID);
+                    completeSave();
                     loadDataTable_DSLSP(grName, brand);
-                    tb_DSSP.clearSelection();
-                    txt_Name.setEditable(true);
-                    txt_Name.setText("");
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                default ->
+                    JOptionPane.showMessageDialog(this, "Hành động không hợp lệ !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi ghi sản phẩm", "ERROR!", JOptionPane.ERROR_MESSAGE);
@@ -637,7 +637,7 @@ public class QuanLyKho extends javax.swing.JPanel {
             DefaultTableModel dtm = (DefaultTableModel) tb_DSSP.getModel();
             String cateName = dtm.getValueAt(i, 1).toString();
             current_cateID = loaisp_data.name_to_ID(cateName);
-
+            
             String status = cbLocSP.getSelectedItem().toString();
             switch (status) {
                 case "Tồn kho":
@@ -648,7 +648,7 @@ public class QuanLyKho extends javax.swing.JPanel {
                     break;
             }
         }
-
+        
 
     }//GEN-LAST:event_btn_LayDSActionPerformed
 

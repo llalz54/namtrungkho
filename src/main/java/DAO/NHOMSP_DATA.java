@@ -45,17 +45,17 @@ public class NHOMSP_DATA {
             return dssp;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi lấy danh sách nhóm sản phẩm: " + e.getMessage(),
-                        "ERROR!", JOptionPane.ERROR_MESSAGE);
+                    "ERROR!", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
-    
+
     public ArrayList<NHOMSP> getListnhomSP_Status(String status) {
         String sql = "SELECT * FROM NhomSP WHERE status = ?";
         try (Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ResultSet rs = ps.executeQuery();
-            
+
             ArrayList<NHOMSP> dssp = new ArrayList<>();
             while (rs.next()) {
                 NHOMSP gr = new NHOMSP();
@@ -67,11 +67,11 @@ public class NHOMSP_DATA {
             return dssp;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi lấy danh sách nhóm sản phẩm theo trạng thái: " + e.getMessage(),
-                        "ERROR!", JOptionPane.ERROR_MESSAGE);
+                    "ERROR!", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
-    
+
     public ArrayList<NHOMSP> getGrProduct_Name(String text) {
         ArrayList<NHOMSP> list = new ArrayList<>();
         for (NHOMSP gr : listnhomSP) {
@@ -131,31 +131,30 @@ public class NHOMSP_DATA {
         }
     }
 
-    public static void update_GrProduct(int gr_ID, String oldName, String name, String status) {
+    public static void update_GrProduct(int gr_ID, String name, String status) {
         if (StringHelper.isNullOrBlank(name)) {
             JOptionPane.showMessageDialog(null, "Tên nhóm sản phẩm không được để trống.",
                     "Cảnh báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
         // Nếu tên mới khác tên cũ thì kiểm tra trùng lặp
-        if (!name.equalsIgnoreCase(oldName)) {
-            String checkSql = "SELECT COUNT(*) FROM NhomSP WHERE name = ?";
-            try (
-                    Connection conn = CONNECTION.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
-                checkPs.setString(1, name);
-                ResultSet rs = checkPs.executeQuery();
-                if (rs.next() && rs.getInt(1) > 0) {
-                    JOptionPane.showMessageDialog(null,
-                            "Tên nhóm sản phẩm đã tồn tại. Vui lòng chọn tên khác.",
-                            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Lỗi kiểm tra tên nhóm sản phẩm: " + e.getMessage(),
-                        "ERROR!", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
+        String checkSql = "SELECT 1 FROM NhomSP WHERE name = ? AND group_id !=?";
+        try (
+                Connection conn = CONNECTION.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+            checkPs.setString(1, name);
+            checkPs.setInt(2, gr_ID);
+            ResultSet rs = checkPs.executeQuery();
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(null,
+                        "Tên nhóm sản phẩm đã tồn tại. Vui lòng chọn tên khác.",
+                        "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi kiểm tra tên nhóm sản phẩm: " + e.getMessage(),
+                    "ERROR!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
         }
         // Hỏi xác nhận trước khi sửa
         int confirm = JOptionPane.showConfirmDialog(null,

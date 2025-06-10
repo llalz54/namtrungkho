@@ -34,7 +34,7 @@ public class NhomSP extends javax.swing.JPanel {
         txt_Name.setEnabled(true);
         cb_Status.setEnabled(true);
         tb_GrProduct.clearSelection();
-        
+
         action_QLNSP = "";
         loadDataTable_NhomSP();
     }
@@ -131,6 +131,7 @@ public class NhomSP extends javax.swing.JPanel {
         }
         tb_GrProduct.setModel(dtm);
     }
+
     private void loadDataTable_GrProduct_Status() {
         String selected = cbLocSP.getSelectedItem().toString();
         ArrayList<NHOMSP> dsnsp = null;
@@ -163,6 +164,7 @@ public class NhomSP extends javax.swing.JPanel {
         }
         tb_GrProduct.setModel(dtm);
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -390,10 +392,9 @@ public class NhomSP extends javax.swing.JPanel {
             .addGroup(pn_TimKiemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbLocSP, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
-                        .addComponent(tfTimKiem))
-                    .addComponent(btn_Search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cbLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_Search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tfTimKiem, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -428,6 +429,10 @@ public class NhomSP extends javax.swing.JPanel {
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         // TODO add your handling code here:
         try {
+            if (action_QLNSP == null || action_QLNSP.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             String name = StringHelper.safeTrim(txt_Name.getText());
             String trangThai = cb_Status.getSelectedItem().toString();
             String status = convertTrangThai(trangThai);
@@ -442,7 +447,7 @@ public class NhomSP extends javax.swing.JPanel {
                     completeAction();
                 }
                 case "update" -> {
-                    nhomsp_Data.update_GrProduct(current_grID, current_grName, name, status);
+                    nhomsp_Data.update_GrProduct(current_grID, name, status);
                     completeAction();
                 }
                 case "delete" -> {
@@ -450,7 +455,8 @@ public class NhomSP extends javax.swing.JPanel {
                     completeAction();
                 }
                 default ->
-                    JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Hành động không hợp lệ!!!", "Input warning", JOptionPane.WARNING_MESSAGE);
+                    
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi ghi nhóm sản phẩm", "ERROR!", JOptionPane.ERROR_MESSAGE);
@@ -473,7 +479,7 @@ public class NhomSP extends javax.swing.JPanel {
         action_QLNSP = "update";
         int i = tb_GrProduct.getSelectedRow();
         if (i < 0) {
-            JOptionPane.showMessageDialog(this, "Chọn nhà cung cấp để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Chọn nhóm sản phẩm để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btn_UpdateActionPerformed
 
