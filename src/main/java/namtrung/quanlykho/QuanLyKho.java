@@ -187,7 +187,7 @@ public class QuanLyKho extends javax.swing.JPanel {
                     rs.getString(1),
                     rs.getString(2),
                     rs.getString(3),
-                    vnFormat.format(rs.getString(4)),
+                    vnFormat.format(rs.getLong(4)),
                     rs.getString(5),
                     rs.getString(6)
                 };
@@ -411,7 +411,12 @@ public class QuanLyKho extends javax.swing.JPanel {
 
         tb_DSSP_Serial.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
                 "Ngày nhập", "Serial", "Nhà cung cấp", "Giá nhập", "Ngày kích hoạt", "Ngày kết thúc"

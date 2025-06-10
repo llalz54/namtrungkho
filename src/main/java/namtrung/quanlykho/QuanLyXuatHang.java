@@ -525,8 +525,8 @@ public class QuanLyXuatHang extends JPanel {
             // Lấy danh sách serial từ bảng
             List<String> listSerial = new ArrayList<>();
             //ngayXuat
-            LocalDate ngayXuat = LocalDate.now();
-            String ngayXuatStr = ngayXuat.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            
+            String ngayXuatStr = tbPX.getValueAt(selectedRow, 6).toString();
             //HoaDon
             String hoaDon = tf_HoaDon.getText().trim();
             //DonViXuat
@@ -1127,6 +1127,8 @@ public class QuanLyXuatHang extends JPanel {
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel8.setText("Tìm kiếm :");
+
+        tfTim.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btnTim.setText("Tìm");
         btnTim.addActionListener(new java.awt.event.ActionListener() {

@@ -589,7 +589,7 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 800));
 
         panelShow.setBackground(new java.awt.Color(255, 255, 255));
-        panelShow.setPreferredSize(new java.awt.Dimension(1000, 700));
+        panelShow.setPreferredSize(new java.awt.Dimension(1200, 800));
 
         javax.swing.GroupLayout panelShowLayout = new javax.swing.GroupLayout(panelShow);
         panelShow.setLayout(panelShowLayout);
