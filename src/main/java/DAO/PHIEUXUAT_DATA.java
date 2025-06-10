@@ -73,9 +73,17 @@ public class PHIEUXUAT_DATA {
         for (PHIEUXUAT sp : allSP) {
             String tenSP = sp.getTenLoai().toLowerCase();
             String kH = sp.getCustomer().toLowerCase();
-            if (tenSP.contains(key.toLowerCase()) || kH.contains(key.toLowerCase())) {
-                dssp.add(sp);
+            String hd = sp.getHoaDon();
+            if (hd != null || !hd.isEmpty()) {
+                if (tenSP.contains(key.toLowerCase()) || hd.contains(key) || kH.contains(key.toLowerCase())) {
+                    dssp.add(sp);
+                } else {
+                    if (tenSP.contains(key.toLowerCase()) || kH.contains(key.toLowerCase())) {
+                        dssp.add(sp);
+                    }
+                }
             }
+
         }
         return dssp;
     }

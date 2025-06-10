@@ -47,6 +47,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -431,7 +432,11 @@ public class QuanLyXuatHang extends JPanel {
             ps.setString(9, ngayXuat);
             ps.setString(10, hoaDon);
             ps.setString(11, donViXuat);
-            ps.setString(12, ngayXuatHD);
+            if (ngayXuatHD != null && !ngayXuatHD.trim().isEmpty()) {
+                ps.setDate(12, java.sql.Date.valueOf(ngayXuatHD));
+            } else {
+                ps.setNull(12, java.sql.Types.DATE);
+            }
             ps.setInt(13, idpx);
             ps.executeUpdate();
             ps.close();
@@ -527,7 +532,12 @@ public class QuanLyXuatHang extends JPanel {
             //DonViXuat
             String dviXuat = tf_DviXuat.getText().trim();
             //ngayXuatHD
-            LocalDate ngayXuatHD = LocalDate.parse(tf_ngayXuatHD.getText().trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String ngayXuatHD_Str = tf_ngayXuatHD.getText().trim();
+            String ngayXuatHD = null;
+            if (!ngayXuatHD_Str.isEmpty()) {
+                ngayXuatHD = LocalDate.parse(ngayXuatHD_Str, DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
+            }
+
             // Ngày bắt đầu bảo hành (start_date)
             LocalDate startDate = LocalDate.parse(tf_ngayXuat.getText().trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -554,7 +564,7 @@ public class QuanLyXuatHang extends JPanel {
 
             // Gọi xử lý
             int idpx = Integer.parseInt(tbPX.getValueAt(selectedRow, 0).toString()); // Cột 0 là idpx
-            boolean ok = updateXuatHang(idpx, userId, categoryId, soLuong, price, NYC, ghiChu, customer, address, ngayXuatStr, hoaDon, dviXuat, ngayXuatHD.toString(), startDate.toString(), endDateStr, listSerial);
+            boolean ok = updateXuatHang(idpx, userId, categoryId, soLuong, price, NYC, ghiChu, customer, address, ngayXuatStr, hoaDon, dviXuat, ngayXuatHD, startDate.toString(), endDateStr, listSerial);
             if (ok) {
                 JOptionPane.showMessageDialog(null, "Sửa thành công!");
                 model.setRowCount(0); // clear table
@@ -568,198 +578,6 @@ public class QuanLyXuatHang extends JPanel {
         }
     }
 
-    //Xuất
-//    public void xuatPhieuBaoGiaPDF() {
-//        try {
-//            int selectedRow = tbPX.getSelectedRow();
-//            int idpx = Integer.parseInt(tbPX.getValueAt(selectedRow, 0).toString());
-//            String name = tbPX.getValueAt(selectedRow, 2).toString();
-//            int price = Integer.parseInt(tf_giaXuat.getText().trim());
-//            String DviXuat = tf_DviXuat.getText().trim();
-//            String customer = tf_khachHang.getText().trim();
-//            String address = tf_diaChi.getText().trim();
-//       //     int thanhTien = Integer.parseInt(tbPX.getValueAt(selectedRow, 4).toString().trim().replaceAll("[^\\d]", ""));
-//            int soLuong = Integer.parseInt(tf_soLuong.getText().trim());
-//            // Lấy danh sách serial từ bảng
-//            List<String> listSerial = new ArrayList<>();
-//            //ngayXuat
-//            String ngayXuatStr = tf_ngayXuatHD.getText().trim();
-//            //hoá đơn
-//            String hd = tf_HoaDon.getText().trim();
-    ////            // 1. Nhập VAT
-////            String inputVat = JOptionPane.showInputDialog(null, "Nhập VAT (%):", "10");
-////            if (inputVat == null || inputVat.isEmpty()) {
-////                return;
-////            }
-////            int vatPercent = Integer.parseInt(inputVat.trim());
-//
-//// === Mở hộp thoại chọn nơi lưu file ===
-//            JFileChooser chooser = new JFileChooser();
-//            chooser.setDialogTitle("Chọn thư mục để lưu file PDF");
-//            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//            chooser.setAcceptAllFileFilterUsed(false);
-//
-//            int result = chooser.showSaveDialog(null);
-//            if (result != JFileChooser.APPROVE_OPTION) {
-//                return; // Người dùng bấm Cancel
-//            }
-//
-//            File selectedDir = chooser.getSelectedFile();
-//            String fileName = "Xuất "+ name + " cho " + customer + ".pdf";
-//            String fullPath = selectedDir.getAbsolutePath() + File.separator + fileName;
-//            // 2. Tạo Document PDF
-//            Document document = new Document(PageSize.A4) {
-//            };
-//
-//            PdfWriter.getInstance(document, new FileOutputStream(fullPath));
-//            document.open();
-//
-//            // 3. Fonts
-//            //BaseFont bf = BaseFont.createFont("fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-//            BaseFont bf = BaseFont.createFont(
-//                    getClass().getResource("/fonts/arial.ttf").toString(),
-//                    BaseFont.IDENTITY_H,
-//                    BaseFont.EMBEDDED
-//            );
-//            Font fontTitle = new Font(bf, 14, Font.BOLD);
-//            Font fontNormal = new Font(bf, 12);
-//            Font fontBold = new Font(bf, 12, Font.BOLD);
-//            Font ctyBold = new Font(bf, 10, Font.BOLD);
-//            Font fontcty = new Font(bf, 10);
-//            // 4. Header bảng 2 cột
-//            PdfPTable headerTable = new PdfPTable(2);
-//            headerTable.setWidthPercentage(100);
-//            headerTable.setWidths(new float[]{75f, 25f}); // chia đôi trái phải     
-//
-//// 1. Thông tin công ty góc trái
-//            PdfPTable companyInfo = new PdfPTable(2);
-//            companyInfo.setWidthPercentage(100);
-//            companyInfo.setWidths(new float[]{70f, 30f});
-//
-//            PdfPCell leftCompany = new PdfPCell();
-//            leftCompany.setBorder(Rectangle.NO_BORDER);
-//            leftCompany.addElement(new Paragraph(DviXuat, ctyBold));
-//            leftCompany.addElement(new Paragraph("45 Thạch Thị Thanh, Phường Tân Định, Quận 1", fontcty));
-//            companyInfo.addCell(leftCompany);
-//
-//// Cột phải trống hoặc thêm nội dung
-//            PdfPCell rightEmpty = new PdfPCell(new Phrase(""));
-//            rightEmpty.setBorder(Rectangle.NO_BORDER);
-//            companyInfo.addCell(rightEmpty);
-//
-//            document.add(companyInfo);
-//
-//// Phần trái
-//            PdfPCell leftCell = new PdfPCell();
-//            leftCell.setBorder(Rectangle.NO_BORDER);
-//            leftCell.addElement(new Paragraph("Tên khách hàng: " + customer, fontNormal));
-//            leftCell.addElement(new Paragraph("Địa chỉ: " + address, fontNormal));
-//            //leftCell.addElement(new Paragraph("Tên Sản Phẩm: " + name, fontNormal));
-//          //  leftCell.addElement(new Paragraph("Số Lượng: " + soLuong, fontNormal));
-//            leftCell.addElement(new Paragraph("Nội dung:", fontNormal));
-//
-//// Phần phải
-//            PdfPCell rightCell = new PdfPCell();
-//            rightCell.setBorder(Rectangle.NO_BORDER);
-//            rightCell.addElement(new Paragraph("Ngày: " + ngayXuatStr, fontNormal));
-//            rightCell.addElement(new Paragraph("Số phiếu: XH" + String.format("%05d", hd), fontNormal));
-//           // rightCell.addElement(new Paragraph(" ", fontNormal));
-//           // rightCell.addElement(new Paragraph("Đơn giá: " + String.format("%,d", price), fontNormal));
-//          //  rightCell.addElement(new Paragraph("Đơn vị tiền tệ: VND", fontNormal));
-//
-//// Thêm vào bảng
-//            headerTable.addCell(leftCell);
-//            headerTable.addCell(rightCell);
-//
-//// Tiêu đề "BÁO GIÁ" ở giữa
-//            Paragraph title = new Paragraph("PHIẾU XUẤT HÀNG", fontTitle);
-//            title.setAlignment(Element.ALIGN_CENTER);
-//            document.add(title);
-//            document.add(new Paragraph(" ")); // Dòng trắng
-//
-//// Thêm bảng header 2 cột
-//            document.add(headerTable);
-//            document.add(new Paragraph(" ")); // Dòng trắng nếu cần
-//            // 5. Bảng chi tiết
-//            PdfPTable table = new PdfPTable(3);
-//            table.setWidths(new float[]{60f,15f,25f});
-//            table.setWidthPercentage(30);
-//
-//            // Header bảng
-//            String[] headers = {"Hàng Hoá","Số lượng","Serial"};
-//            for (String h : headers) {
-//                PdfPCell cell = new PdfPCell(new Phrase(h, fontBold));
-//                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-//                table.addCell(cell);
-//            }
-//
-//            // Dữ liệu
-//            DefaultTableModel model = (DefaultTableModel) tbSerial.getModel();
-//            int rowCount = model.getRowCount();
-//
-//            for (int i = 0; i < rowCount; i++) {
-//                Object value = model.getValueAt(i, 2); // Giờ Serial ở cột 1 (cột 2)
-//                if (value != null) {
-//                    String serial = value.toString().trim();
-//                    if (!serial.isEmpty()) {
-//                        listSerial.add(serial);
-//                    }
-//                }
-//            }
-//            for (String s : listSerial) {
-//
-//                PdfPCell serialCell = new PdfPCell(new Phrase(s, fontNormal));
-//                serialCell.setHorizontalAlignment(Element.ALIGN_CENTER); // căn giữa ngang
-//                serialCell.setVerticalAlignment(Element.ALIGN_MIDDLE);   // căn giữa dọc (nếu cần)
-//                table.addCell(serialCell);
-//
-//            }
-//
-//            document.add(table);
-//
-//            // 6. Tổng kết
-//            //long tienVAT = thanhTien * vatPercent / 100;
-//           // long tongThanhToan = thanhTien + tienVAT;
-//
-//           // document.add(new Paragraph("\nCộng tiền hàng: " + String.format("%,d", thanhTien), fontNormal));
-//          //  document.add(new Paragraph("Thuế VAT (" + vatPercent + "%): " + String.format("%,d", tienVAT), fontNormal));
-//          //  document.add(new Paragraph("Tổng thanh toán: " + String.format("%,d", tongThanhToan), fontBold));
-//          //  document.add(new Paragraph("Số tiền bằng chữ: " + NumberToWords.convert(tongThanhToan), fontNormal));
-//
-//            // 7. Ký tên
-//            // Bảng chữ ký 2 cột
-//            PdfPTable signTable = new PdfPTable(2);
-//            signTable.setWidthPercentage(100);
-//            signTable.setWidths(new float[]{75f, 25f});
-//
-//// Ô bên trái – Người lập phiếu
-//            PdfPCell nguoiLap = new PdfPCell();
-//            nguoiLap.setBorder(Rectangle.NO_BORDER);
-//            nguoiLap.setHorizontalAlignment(Element.ALIGN_CENTER);
-//            nguoiLap.addElement(new Paragraph("Người lập phiếu", fontNormal));
-//            nguoiLap.addElement(new Paragraph("(Ký, họ tên)", fontcty));
-//            signTable.addCell(nguoiLap);
-//
-//// Ô bên phải – Khách hàng
-//            PdfPCell khachHang = new PdfPCell();
-//            khachHang.setBorder(Rectangle.NO_BORDER);
-//            khachHang.setHorizontalAlignment(Element.ALIGN_CENTER);
-//            khachHang.addElement(new Paragraph("Khách hàng", fontNormal));
-//            khachHang.addElement(new Paragraph("(Ký, họ tên)", fontcty));
-//            signTable.addCell(khachHang);
-//
-//// Thêm bảng chữ ký vào document
-//            document.add(new Paragraph("\n\n")); // Dòng trắng phía trên chữ ký
-//            document.add(signTable);
-//            document.close();
-//
-//            JOptionPane.showMessageDialog(null, "Xuất file PDF thành công:\n" + fileName);
-//            Desktop.getDesktop().open(new File(fullPath));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(null, "Lỗi khi xuất PDF: " + e.getMessage());
-//        }
-//    }
     //Kiểm tra
     private boolean isSameCustomer(List<Integer> selectedIds) throws SQLException {
         if (selectedIds.isEmpty()) {
@@ -887,7 +705,7 @@ public class QuanLyXuatHang extends JPanel {
             }
 
             File selectedDir = chooser.getSelectedFile();
-            String baseFileName = "XuatHang_" + hd + "_" + customer.replaceAll("[^a-zA-Z0-9]", "_");
+            String baseFileName = "XuatHang_" + hd + "_" + customer + "_" + ngayXuatHD.replaceAll("[^a-zA-Z0-9]", "_");
 
             // Quyết định cách xuất file dựa trên số lượng serial
             if (totalSerials <= 10) {
@@ -967,7 +785,7 @@ public class QuanLyXuatHang extends JPanel {
         leftInfo.setBorder(Rectangle.NO_BORDER);
         leftInfo.addElement(new Paragraph("Khách hàng: " + customer, fontNormal));
         leftInfo.addElement(new Paragraph("Địa chỉ: " + address, fontNormal));
-        //leftInfo.addElement(new Paragraph("Sản phẩm: " + name, fontNormal));
+        leftInfo.addElement(new Paragraph("Nội dung: ", fontNormal));
         //  leftInfo.addElement(new Paragraph("Số lượng: " + soLuong, fontNormal));
         infoTable.addCell(leftInfo);
 
@@ -1118,7 +936,7 @@ public class QuanLyXuatHang extends JPanel {
         leftInfo.setBorder(Rectangle.NO_BORDER);
         leftInfo.addElement(new Paragraph("Khách hàng: " + customer, fontNormal));
         leftInfo.addElement(new Paragraph("Địa chỉ: " + address, fontNormal));
-        // leftInfo.addElement(new Paragraph("Sản phẩm: " + name, fontNormal));
+        leftInfo.addElement(new Paragraph("Nội dung: ", fontNormal));
         //  leftInfo.addElement(new Paragraph("Số lượng: " + soLuong, fontNormal));
         infoTable.addCell(leftInfo);
 
@@ -1216,7 +1034,7 @@ public class QuanLyXuatHang extends JPanel {
             // Bảng serial
             PdfPTable serialTable = new PdfPTable(2); // STT, Serial
             serialTable.setWidthPercentage(100);
-            serialTable.setWidths(new float[]{50f,50f});
+            serialTable.setWidths(new float[]{50f, 50f});
 
             serialTable.addCell(new Phrase("STT", fontBold));
             serialTable.addCell(new Phrase("Serial", fontBold));
@@ -1224,7 +1042,7 @@ public class QuanLyXuatHang extends JPanel {
             for (String serial : product.getSerials()) {
                 serialTable.addCell(new Phrase(String.valueOf(stt++), fontNormal));
                 serialTable.addCell(new Phrase(serial, fontNormal));
-    
+
             }
 
             document.add(serialTable);

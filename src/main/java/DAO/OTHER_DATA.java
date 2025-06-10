@@ -60,10 +60,10 @@ public class OTHER_DATA {
         header.setPreferredSize(new Dimension(header.getWidth(), 30)); // Chiều cao header
 
         // 2. Chiều cao dòng
-        table.setRowHeight(28); // Chiều cao mỗi dòng
+        table.setRowHeight(40); // Chiều cao mỗi dòng
 
         // 3. Font dòng
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 13));        
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));        
         table.setShowVerticalLines(false);
 
         // 4. (Tùy chọn) Căn giữa hoặc trái cho dữ liệu trong ô
