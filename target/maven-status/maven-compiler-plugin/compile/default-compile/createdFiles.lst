@@ -38,12 +38,14 @@ namtrung\quanlykho\TaiKhoan.class
 utils\IntHelper.class
 namtrung\quanlykho\DSPhieuNhap$6.class
 namtrung\quanlykho\QuanLyKho$3.class
+namtrung\quanlykho\DSPhieuNhap$15.class
 DAO\PHIEUXUAT_DATA.class
 DTO\ProductInfo.class
 namtrung\quanlykho\XuatHang$14.class
 namtrung\quanlykho\MainFrame.class
 namtrung\quanlykho\QuanLyKho$11.class
 namtrung\quanlykho\QuanLyNCC.class
+utils\UpperCaseEditor.class
 namtrung\quanlykho\NhomSP$8.class
 namtrung\quanlykho\NhomSP$4.class
 namtrung\quanlykho\XuatHang$3.class
@@ -64,6 +66,7 @@ namtrung\quanlykho\MainFrame$6.class
 namtrung\quanlykho\Login$1.class
 namtrung\quanlykho\XuatHang$13.class
 namtrung\quanlykho\XuatHang$4.class
+namtrung\quanlykho\DSPhieuNhap$14.class
 namtrung\quanlykho\QuanLyKho$2.class
 namtrung\quanlykho\DSPhieuNhap$5.class
 namtrung\quanlykho\QuanLyNCC$8.class
@@ -125,6 +128,7 @@ namtrung\quanlykho\XuatHang$7.class
 namtrung\quanlykho\DSPhieuNhap$12.class
 namtrung\quanlykho\QuanLyXuatHang$12.class
 DAO\NCC_DATA.class
+utils\UpperCaseEditor$1.class
 namtrung\quanlykho\ChiTietNhapHang$5.class
 namtrung\quanlykho\QuanLyXuatHang$9.class
 DAO\PHIEUNHAP_DATA.class
@@ -143,6 +147,7 @@ namtrung\quanlykho\MainFrame$8.class
 namtrung\quanlykho\DSPhieuNhap$11.class
 namtrung\quanlykho\TaiKhoan$1.class
 DAO\GroupItem.class
+utils\UpperCaseEditor$2.class
 namtrung\quanlykho\DSPhieuNhap$9.class
 DTO\SANPHAM.class
 DTO\CTPX.class

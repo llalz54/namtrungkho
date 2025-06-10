@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.AbstractDocument;
 import utils.StringHelper;
+import utils.UpperCaseEditor;
 
 public class ChiTietNhapHang extends JPanel {
 
@@ -85,6 +86,10 @@ public class ChiTietNhapHang extends JPanel {
         }
 
         tb_CTPN.setModel(model);
+        tb_CTPN.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        for (int i = 0; i < tb_CTPN.getColumnCount(); i++) {
+            tb_CTPN.getColumnModel().getColumn(i).setCellEditor(new UpperCaseEditor());
+        }
 
         String notification = "Hãy nhập Serial cho các thiết bị vừa nhập";
         JOptionPane.showMessageDialog(null, notification, "", JOptionPane.INFORMATION_MESSAGE);
@@ -459,6 +464,7 @@ public class ChiTietNhapHang extends JPanel {
             conn.commit();
             conn.setAutoCommit(true);
             conn.close();
+
             completeSave();
             JOptionPane.showMessageDialog(null, "Ghi phiếu nhập thành công!");
         } catch (SQLException e) {
