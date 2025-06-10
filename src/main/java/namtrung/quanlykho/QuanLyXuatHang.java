@@ -13,6 +13,7 @@ import DAO.UpperCase;
 import DTO.CTPX;
 import DTO.LOAISP;
 import DTO.PHIEUXUAT;
+import DTO.ProductInfo;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -794,6 +795,27 @@ public class QuanLyXuatHang extends JPanel {
         }
     }
 
+    private List<String> getSerialsFromDatabase(int idpx) throws SQLException {
+        List<String> serials = new ArrayList<>();
+        DBAccess acc = new DBAccess();
+        try {
+            String sql = "SELECT serial FROM CTPX WHERE idpx = ? ORDER BY serial";
+            PreparedStatement ps = acc.getConnection().prepareStatement(sql);
+            ps.setInt(1, idpx);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                serials.add(rs.getString("serial"));
+            }
+
+            rs.close();
+            ps.close();
+        } finally {
+            acc.close();
+        }
+        return serials;
+    }
+
     private List<Integer> getSelectedPXIds() {
         List<Integer> selectedIds = new ArrayList<>();
         int[] selectedRows = tbPX.getSelectedRows();
@@ -807,29 +829,51 @@ public class QuanLyXuatHang extends JPanel {
 
     public void xuatPhieuBaoGiaPDF() {
         try {
-            int selectedRow = tbPX.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(null, "Vui lòng chọn phiếu xuất!");
+            int[] selectedRows = tbPX.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một phiếu xuất!");
                 return;
             }
 
-            int idpx = Integer.parseInt(tbPX.getValueAt(selectedRow, 0).toString());
-            String name = tbPX.getValueAt(selectedRow, 2).toString();
-            long price = Long.parseLong(tf_giaXuat.getText().trim());
-            String DviXuat = tf_DviXuat.getText().trim();
-            String customer = tf_khachHang.getText().trim();
-            String address = tf_diaChi.getText().trim();
-            String hd = tf_HoaDon.getText().trim();
-            int soLuong = Integer.parseInt(tf_soLuong.getText().trim());
-
-            // Lấy danh sách serial từ bảng
-            List<String> listSerial = new ArrayList<>();
-            DefaultTableModel model = (DefaultTableModel) tbSerial.getModel();
-            for (int i = 0; i < model.getRowCount(); i++) {
-                Object value = model.getValueAt(i, 1);
-                if (value != null && !value.toString().trim().isEmpty()) {
-                    listSerial.add(value.toString().trim());
+            // Kiểm tra cùng khách hàng
+            String firstCustomer = null;
+            for (int row : selectedRows) {
+                String currentCustomer = tbPX.getValueAt(row, 7).toString().trim(); // Cột 7: Khách hàng
+                if (firstCustomer == null) {
+                    firstCustomer = currentCustomer;
+                } else if (!firstCustomer.equals(currentCustomer)) {
+                    JOptionPane.showMessageDialog(this,
+                            "Các phiếu xuất phải cùng một khách hàng!\n"
+                            + "Khách hàng đầu tiên: " + firstCustomer + "\n"
+                            + "Khách hàng khác: " + currentCustomer);
+                    return;
                 }
+            }
+
+            // Lấy thông tin chung
+            String customer = firstCustomer;
+            String address = tf_diaChi.getText().trim();
+            String DviXuat = tf_DviXuat.getText().trim();
+            String hd = tf_HoaDon.getText().trim();
+            String ngayXuatHD = tf_ngayXuatHD.getText().trim();
+
+            // Tổng hợp sản phẩm và serial
+            List<ProductInfo> products = new ArrayList<>();
+            List<String> allSerials = new ArrayList<>();
+            int totalSerials = 0;
+
+            for (int row : selectedRows) {
+                int idpx = Integer.parseInt(tbPX.getValueAt(row, 0).toString());
+                String name = tbPX.getValueAt(row, 2).toString();
+                long price = Long.parseLong(tbPX.getValueAt(row, 4).toString().replaceAll("[^\\d]", ""));
+                int soLuong = Integer.parseInt(tbPX.getValueAt(row, 3).toString());
+
+                // Lấy serial từ database
+                List<String> serials = getSerialsFromDatabase(idpx);
+                totalSerials += serials.size();
+
+                products.add(new ProductInfo(idpx, name, price, soLuong, serials));
+                allSerials.addAll(serials);
             }
 
             // Chọn thư mục lưu file
@@ -838,45 +882,42 @@ public class QuanLyXuatHang extends JPanel {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setAcceptAllFileFilterUsed(false);
 
-            if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
+            if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
                 return;
             }
 
             File selectedDir = chooser.getSelectedFile();
-            String baseFileName = "Xuất " + name + " cho " + customer;
+            String baseFileName = "XuatHang_" + hd + "_" + customer.replaceAll("[^a-zA-Z0-9]", "_");
 
-            // Kiểm tra số lượng serial để quyết định cách xuất file
-            if (listSerial.size() <= 2) {
+            // Quyết định cách xuất file dựa trên số lượng serial
+            if (totalSerials <= 10) {
                 // Xuất 1 file duy nhất nếu số serial <= 10
-                xuấtFilePDFDuyNhất(selectedDir, baseFileName + ".pdf",
-                        idpx, name, price, DviXuat, hd, customer, address,
-                        soLuong, listSerial);
+                xuatFilePDFDuyNhat(selectedDir, baseFileName + ".pdf",
+                        products, DviXuat, hd, customer, address, ngayXuatHD);
             } else {
                 // Xuất 2 file riêng nếu số serial > 10
-                // File 1: Thông tin chung (không có serial)
-                xuấtFileThôngTin(selectedDir, baseFileName + "_ThongTin.pdf",
-                        idpx, name, price, DviXuat, hd, customer, address,
-                        soLuong);
+                xuatFileThongTin(selectedDir, baseFileName + "_ThongTin.pdf",
+                        products, DviXuat, hd, customer, address, ngayXuatHD);
 
-                // File 2: Danh sách serial
-                xuấtFileSerial(selectedDir, baseFileName + "_Serial.pdf",
-                        name, soLuong, listSerial);
+                xuatFileSerial(selectedDir, baseFileName + "_Serial.pdf",
+                        products);
             }
+
+            JOptionPane.showMessageDialog(this, "Xuất file thành công!");
+            Desktop.getDesktop().open(selectedDir);
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi xuất PDF: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Lỗi khi xuất PDF: " + e.getMessage());
         }
     }
 
-    private void xuấtFilePDFDuyNhất(File dir, String fileName,
-            int idpx, String name, long price, String DviXuat, String hd,
-            String customer, String address, int soLuong,
-            List<String> listSerial) throws Exception {
+    private void xuatFilePDFDuyNhat(File dir, String fileName,
+            List<ProductInfo> products, String DviXuat, String hd,
+            String customer, String address, String ngayXuatHD) throws Exception {
 
-        String fullPath = dir.getAbsolutePath() + File.separator + fileName;
         Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, new FileOutputStream(fullPath));
+        PdfWriter.getInstance(document, new FileOutputStream(new File(dir, fileName)));
         document.open();
 
         // Fonts
@@ -940,38 +981,49 @@ public class QuanLyXuatHang extends JPanel {
         document.add(infoTable);
         document.add(new Paragraph(" "));
 
-        // Bảng sản phẩm và serial
+        // Bảng sản phẩm và serial (3 cột)
         PdfPTable productTable = new PdfPTable(3);
         productTable.setWidthPercentage(100);
-        productTable.setWidths(new float[]{50f, 20f, 30f});
+        productTable.setWidths(new float[]{40f, 15f, 45f});
 
         // Header bảng
-        String[] headers = {"Tên sản phẩm", "Số lượng", "Serial"};
-        for (String h : headers) {
-            PdfPCell cell = new PdfPCell(new Phrase(h, fontBold));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            productTable.addCell(cell);
-        }
+        productTable.addCell(new Phrase("Tên sản phẩm", fontBold));
+        productTable.addCell(new Phrase("Số lượng", fontBold));
+        productTable.addCell(new Phrase("Danh sách serial", fontBold));
 
-        // Dòng đầu tiên - tên sản phẩm và số lượng
-        PdfPCell nameCell = new PdfPCell(new Phrase(name, fontNormal));
-        nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        nameCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        nameCell.setRowspan(listSerial.size()); // Merge các dòng serial
+        // Dữ liệu sản phẩm
+        for (ProductInfo product : products) {
+            List<String> serials = product.getSerials();
+            int rowCount = serials.size();
 
-        PdfPCell qtyCell = new PdfPCell(new Phrase(String.valueOf(soLuong), fontNormal));
-        qtyCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        qtyCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        qtyCell.setRowspan(listSerial.size()); // Merge các dòng serial
+            // Nếu không có serial thì vẫn tạo một dòng
+            if (rowCount == 0) {
+                PdfPCell nameCell = new PdfPCell(new Phrase(product.getName(), fontNormal));
+                nameCell.setRowspan(1);
+                productTable.addCell(nameCell);
 
-        productTable.addCell(nameCell);
-        productTable.addCell(qtyCell);
+                PdfPCell qtyCell = new PdfPCell(new Phrase(String.valueOf(product.getSoLuong()), fontNormal));
+                qtyCell.setRowspan(1);
+                productTable.addCell(qtyCell);
 
-        // Các dòng serial
-        for (String serial : listSerial) {
-            PdfPCell serialCell = new PdfPCell(new Phrase(serial, fontNormal));
-            serialCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            productTable.addCell(serialCell);
+                productTable.addCell(new Phrase("N/A", fontNormal)); // hoặc để chuỗi trống
+                continue;
+            }
+
+            // Tên sản phẩm (gộp theo số serial)
+            PdfPCell nameCell = new PdfPCell(new Phrase(product.getName(), fontNormal));
+            nameCell.setRowspan(rowCount);
+            productTable.addCell(nameCell);
+
+            // Số lượng (gộp theo số serial)
+            PdfPCell qtyCell = new PdfPCell(new Phrase(String.valueOf(product.getSoLuong()), fontNormal));
+            qtyCell.setRowspan(rowCount);
+            productTable.addCell(qtyCell);
+
+            // Serial từng dòng
+            for (int i = 0; i < rowCount; i++) {
+                productTable.addCell(new Phrase(serials.get(i), fontNormal));
+            }
         }
 
         document.add(productTable);
@@ -982,7 +1034,7 @@ public class QuanLyXuatHang extends JPanel {
         document.add(new Paragraph("\n\n"));
         PdfPTable signTable = new PdfPTable(3);
         signTable.setWidthPercentage(100);
-        signTable.setWidths(new float[]{40f,40f,20f});
+        signTable.setWidths(new float[]{40f, 40f, 20f});
 
         PdfPCell nguoiLap = new PdfPCell();
         nguoiLap.setBorder(Rectangle.NO_BORDER);
@@ -997,7 +1049,7 @@ public class QuanLyXuatHang extends JPanel {
         nguoigiao.addElement(new Paragraph("Người giao hàng", fontNormal));
         nguoigiao.addElement(new Paragraph("(Ký, họ tên)", fontcty));
         signTable.addCell(nguoigiao);
-        
+
         PdfPCell khachHang = new PdfPCell();
         khachHang.setBorder(Rectangle.NO_BORDER);
         khachHang.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1009,16 +1061,14 @@ public class QuanLyXuatHang extends JPanel {
         document.close();
 
         JOptionPane.showMessageDialog(null, "Xuất file PDF thành công:\n" + fileName);
-        Desktop.getDesktop().open(new File(fullPath));
     }
 
-    private void xuấtFileThôngTin(File dir, String fileName,
-            int idpx, String name, long price, String DviXuat, String hd,
-            String customer, String address, int soLuong) throws Exception {
+    private void xuatFileThongTin(File dir, String fileName,
+            List<ProductInfo> products, String DviXuat, String hd,
+            String customer, String address, String ngayXuatHD) throws Exception {
 
-        String fullPath = dir.getAbsolutePath() + File.separator + fileName;
         Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, new FileOutputStream(fullPath));
+        PdfWriter.getInstance(document, new FileOutputStream(new File(dir, fileName)));
         document.open();
 
         // Fonts (tương tự như trên)
@@ -1081,30 +1131,29 @@ public class QuanLyXuatHang extends JPanel {
 
         document.add(infoTable);
         document.add(new Paragraph(" "));
+        // Bảng thông tin sản phẩm (không có serial
 
-        // Bảng sản phẩm (chỉ có tên và số lượng)
         PdfPTable productTable = new PdfPTable(2);
         productTable.setWidthPercentage(100);
         productTable.setWidths(new float[]{70f, 30f});
 
-        // Header bảng
         productTable.addCell(new Phrase("Tên sản phẩm", fontBold));
         productTable.addCell(new Phrase("Số lượng", fontBold));
 
-        // Dữ liệu
-        productTable.addCell(new Phrase(name, fontNormal));
-        productTable.addCell(new Phrase(String.valueOf(soLuong), fontNormal));
+        for (ProductInfo product : products) {
+            productTable.addCell(new Phrase(product.getName(), fontNormal));
+            productTable.addCell(new Phrase(String.valueOf(product.getSoLuong()), fontNormal));
+        }
 
         document.add(productTable);
         document.add(new Paragraph("\n(Ghi chú: Danh sách serial được in trong file riêng)", fontNormal));
-        document.add(new Paragraph(" "));
 
         // Tổng kết (tương tự như trên)
         // Chữ ký (tương tự như trên)
         document.add(new Paragraph("\n\n"));
         PdfPTable signTable = new PdfPTable(3);
         signTable.setWidthPercentage(100);
-        signTable.setWidths(new float[]{40f,40f,20f});
+        signTable.setWidths(new float[]{40f, 40f, 20f});
 
         PdfPCell nguoiLap = new PdfPCell();
         nguoiLap.setBorder(Rectangle.NO_BORDER);
@@ -1119,7 +1168,7 @@ public class QuanLyXuatHang extends JPanel {
         nguoigiao.addElement(new Paragraph("Người giao hàng", fontNormal));
         nguoigiao.addElement(new Paragraph("(Ký, họ tên)", fontcty));
         signTable.addCell(nguoigiao);
-        
+
         PdfPCell khachHang = new PdfPCell();
         khachHang.setBorder(Rectangle.NO_BORDER);
         khachHang.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1133,14 +1182,11 @@ public class QuanLyXuatHang extends JPanel {
         JOptionPane.showMessageDialog(null, "Xuất file thông tin thành công:\n" + fileName);
     }
 
-    private void xuấtFileSerial(File dir, String fileName,
-            String name, int soLuong, List<String> listSerial) throws Exception {
-
-        String fullPath = dir.getAbsolutePath() + File.separator + fileName;
-        Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, new FileOutputStream(fullPath));
+    private void xuatFileSerial(File dir, String fileName,
+            List<ProductInfo> products) throws Exception {
+        Document document = new Document(PageSize.A4.rotate()); // Xoay ngang trang giấy
+        PdfWriter.getInstance(document, new FileOutputStream(new File(dir, fileName)));
         document.open();
-
         // Fonts (tương tự như trên)
         BaseFont bf = BaseFont.createFont(
                 getClass().getResource("/fonts/arial.ttf").toString(),
@@ -1149,33 +1195,42 @@ public class QuanLyXuatHang extends JPanel {
         );
         Font fontTitle = new Font(bf, 14, Font.BOLD);
         Font fontNormal = new Font(bf, 12);
-        Font fontBold = new Font(bf, 12, Font.BOLD);
-
-        // Tiêu đề
-        Paragraph title = new Paragraph("DANH SÁCH SERIAL ", fontTitle);
+        Font fontBold = new Font(bf, 12, Font.BOLD); // Tiêu đề
+        Paragraph title = new Paragraph("DANH SÁCH SERIAL CHI TIẾT", fontTitle);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
         document.add(new Paragraph(" "));
 
-        // Bảng serial
-        PdfPTable serialTable = new PdfPTable(3);
-        serialTable.setWidthPercentage(100);
-        serialTable.setWidths(new float[]{15f, 50f, 35f});
+        // Bảng serial (nhóm theo sản phẩm)
+        for (ProductInfo product : products) {
+            if (product.getSerials().isEmpty()) {
+                continue;
+            }
 
-        // Header bảng
-        serialTable.addCell(new Phrase("STT", fontBold));
-        serialTable.addCell(new Phrase("Tên sản phẩm", fontBold));
-        serialTable.addCell(new Phrase("Serial", fontBold));
+            // Tiêu đề nhóm sản phẩm
+            Paragraph productTitle = new Paragraph(
+                    product.getName() + " (" + product.getSerials().size() + " serial)",
+                    fontBold);
+            document.add(productTitle);
+            document.add(new Paragraph(" "));
+            // Bảng serial
+            PdfPTable serialTable = new PdfPTable(2); // STT, Serial
+            serialTable.setWidthPercentage(100);
+            serialTable.setWidths(new float[]{50f,50f});
 
-        // Dữ liệu
-        int stt = 1;
-        for (String serial : listSerial) {
-            serialTable.addCell(new Phrase(String.valueOf(stt++), fontNormal));
-            serialTable.addCell(new Phrase(name, fontNormal));
-            serialTable.addCell(new Phrase(serial, fontNormal));
+            serialTable.addCell(new Phrase("STT", fontBold));
+            serialTable.addCell(new Phrase("Serial", fontBold));
+            int stt = 1;
+            for (String serial : product.getSerials()) {
+                serialTable.addCell(new Phrase(String.valueOf(stt++), fontNormal));
+                serialTable.addCell(new Phrase(serial, fontNormal));
+    
+            }
+
+            document.add(serialTable);
+            document.add(new Paragraph(" ")); // Khoảng cách giữa các sản phẩm
         }
 
-        document.add(serialTable);
         document.close();
 
         JOptionPane.showMessageDialog(null, "Xuất file serial thành công:\n" + fileName);
@@ -1524,7 +1579,6 @@ public class QuanLyXuatHang extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi xuất báo giá: " + e.getMessage());
         }
-
 
     }//GEN-LAST:event_btnXuatActionPerformed
 

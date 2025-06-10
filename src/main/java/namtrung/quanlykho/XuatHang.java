@@ -806,7 +806,7 @@ public class XuatHang extends javax.swing.JPanel {
         char c = evt.getKeyChar();
         String input = tf_NYC.getText().trim();
         // Nếu không phải số và không phải phím xóa (backspace), thì hủy ký tự nhập
-        if (c != '\b' && !Character.isLetter(c)) {
+        if (c != '\b' && c!= ' ' && !Character.isLetter(c)) {
             evt.consume(); // chặn không cho nhập
             java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chữ cái!");
