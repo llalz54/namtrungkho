@@ -1,4 +1,4 @@
- package namtrung.quanlykho;
+package namtrung.quanlykho;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,25 +21,36 @@ import javax.swing.UIManager;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainFrame
-     */
+    private double scaleFactor;
+    Color defaultColor = new Color(89, 168, 105);
+    Color clickColor = new Color(26, 188, 156);
+
     public MainFrame() {
         initComponents();
         applyDefaultUIStyle();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         // Lấy kích thước màn hình
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension baseSize = new Dimension(1500, 800); // kích thước thiết kế chuẩn
 
-        //this.setMinimumSize(new Dimension(1500, 800)); // Giới hạn nhỏ nhất
-        // this.setExtendedState(JFrame.MAXIMIZED_BOTH); // Tự mở rộng ra hết màn hình
+        // Tính hệ số scale
+        scaleFactor = Math.min(
+                screenSize.getWidth() / baseSize.getWidth(),
+                screenSize.getHeight() / baseSize.getHeight()
+        );
+
+        // Áp dụng hệ số scale cho UI
+        applyScaleFactor(scaleFactor);
+
         // Tính toán kích thước tối đa (90% màn hình hoặc 1500x800, tùy cái nào nhỏ hơn)
-        int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
-        int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
+      //  int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
+      //  int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
 
         // Thiết lập kích thước
-        setSize(maxWidth, maxHeight);
+    //    setSize(maxWidth, maxHeight);
         setLocationRelativeTo(null); // căn giữa màn hình
+
         // Thiết lập icon
         try {
             java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/products.png"));
@@ -47,35 +58,36 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (Exception e) {
             System.err.println("Không thể tải icon: " + e.getMessage());
         }
+
         showPanel(new ChiTietNhapHang());
         this.setVisible(true);
     }
 
-    Color defaultColor = new Color(89, 168, 105);
-    Color clickColor = new Color(26, 188, 156);
+    private void applyScaleFactor(double scale) {
+        // Scale font mặc định
+        Font baseFont = UIManager.getFont("Label.font");
+        Font scaledFont = baseFont.deriveFont((float) (baseFont.getSize() * scale));
+        UIManager.put("Label.font", scaledFont);
+        UIManager.put("Button.font", scaledFont);
+        UIManager.put("Table.font", scaledFont);
+        UIManager.put("TextField.font", scaledFont);
+        UIManager.put("TextArea.font", scaledFont);
+
+        // Tăng chiều cao row table
+        UIManager.put("Table.rowHeight", (int) (20 * scale));
+    }
 
     public void showPanel(JPanel panel) {
-        //  panel.setPreferredSize(new Dimension(1500, 800)); // Kích thước chuẩn mong muốn
-
-        // JScrollPane scrollPane = new JScrollPane(panel);
-        // panelShow.add(scrollPane);
-        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        // scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        // panelShow.removeAll();              // Xóa panel cũ
-        //  panelShow.setLayout(new BorderLayout());
-        // panelShow.add(panel); // Thêm panel mới
-        //  panelShow.revalidate();             // Làm mới hiển thị
-        //  panelShow.repaint();
-        panel.setPreferredSize(new Dimension(1200, 700)); // Kích thước cố định có thể cuộn nếu tràn
+        panel.setPreferredSize(new Dimension((int) (1200 * scaleFactor), (int) (800 * scaleFactor)));
 
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        panelShow.removeAll();                      // Xóa nội dung cũ
-        panelShow.setLayout(new BorderLayout());   // Đặt layout
-        panelShow.add(scrollPane, BorderLayout.CENTER); // Chỉ thêm scrollPane
-        panelShow.revalidate();                    // Cập nhật lại giao diện
+        panelShow.removeAll();
+        panelShow.setLayout(new BorderLayout());
+        panelShow.add(scrollPane, BorderLayout.CENTER);
+        panelShow.revalidate();
         panelShow.repaint();
     }
 
