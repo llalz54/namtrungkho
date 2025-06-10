@@ -3,6 +3,7 @@ package namtrung.quanlykho;
 import ConDB.CONNECTION;
 import ConDB.DBAccess;
 import DAO.CTPN_DATA;
+import DAO.LOAISP_DATA;
 import DAO.NCC_DATA;
 import DAO.NHOMSP_DATA;
 import DAO.NumberDocumentFilter;
@@ -17,12 +18,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.text.AbstractDocument;
 import utils.StringHelper;
 import utils.UpperCaseEditor;
@@ -32,6 +35,7 @@ public class ChiTietNhapHang extends JPanel {
     private CTPN_DATA ctpn_Data = new CTPN_DATA();
     private PHIEUNHAP_DATA pn_Data = new PHIEUNHAP_DATA();
     private NHOMSP_DATA gr_Data = new NHOMSP_DATA();
+    private LOAISP_DATA loaiSP_Data = new LOAISP_DATA();
     private NCC_DATA ncc_Data = new NCC_DATA();
 
     private String action = "";
@@ -93,6 +97,28 @@ public class ChiTietNhapHang extends JPanel {
 
         String notification = "Hãy nhập Serial cho các thiết bị vừa nhập";
         JOptionPane.showMessageDialog(null, notification, "", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private boolean isTableSerialFilled(JTable table, int quantity) {
+        int columnCount = table.getColumnCount();
+        int rowCount = table.getRowCount();
+
+        int filledCount = 0;
+
+        for (int row = 0; row < rowCount; row++) {
+            for (int col = 0; col < columnCount; col++) {
+                int cellIndex = row * columnCount + col;
+                if (cellIndex >= quantity) {
+                    return filledCount == quantity;
+                }
+                Object value = table.getValueAt(row, col);
+                if (value != null && !value.toString().trim().isEmpty()) {
+                    filledCount++;
+                }
+            }
+        }
+
+        return filledCount == quantity;
     }
 
     private void loadCB_ListSP(String gr, String brand) {
@@ -392,12 +418,21 @@ public class ChiTietNhapHang extends JPanel {
         if (tb_CTPN.isEditing()) {
             tb_CTPN.getCellEditor().stopCellEditing();
         }
+        
+        int quantity = Integer.parseInt(txt_Quantity.getText());
+        
+        if (isTableSerialFilled(tb_CTPN, quantity)) {
+            System.out.println("Đã nhập đủ Serial.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập đủ Serial!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         String grName = cb_GrProduct.getSelectedItem().toString();
+        String name = cb_Product.getSelectedItem().toString();
         String supplier = cb_Supplier.getSelectedItem().toString();
         int supplier_ID = ncc_Data.name_to_ID(supplier);
         String ngayNhap = txt_ngayNhap.getText().trim();
-        int quantity = Integer.parseInt(txt_Quantity.getText());
-
+        
         long price;
         try {
             // Lấy text, xóa dấu chấm và chuyển thành số
@@ -407,9 +442,8 @@ public class ChiTietNhapHang extends JPanel {
             JOptionPane.showMessageDialog(null, "Giá nhập không hợp lệ");
             return;
         }
-
         int currentUserId = Session.getInstance().getUserId();
-        int categoryID = gr_Data.name_to_ID(grName);
+        int categoryID = loaiSP_Data.name_to_ID(name);;
         String diaChiKho = cb_DiaChiKho.getSelectedItem().toString();
         String soHD = txt_SoHoaDon.getText().trim();
         String ngYeuCau = txt_NgYeuCau.getText().trim();

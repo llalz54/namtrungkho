@@ -21,7 +21,7 @@ public class LOAISP_DATA {
     private ArrayList<LOAISP> listLoaiSP = null;
 
     public LOAISP_DATA() {
-
+        docListLoaiSP();
     }
 
     public void docListLoaiSP() {
