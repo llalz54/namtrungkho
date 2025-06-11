@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import utils.StringHelper;
@@ -153,7 +152,7 @@ public class LOAISP_DATA {
 
     public static void update_GrProduct(int cateID, int grID, String name, String status, String brand) {
         if (StringHelper.isNullOrBlank(name)) {
-            JOptionPane.showMessageDialog(null, "Tên nhóm sản phẩm không được để trống.",
+            JOptionPane.showMessageDialog(null, "Tên sản phẩm không được để trống.",
                     "Cảnh báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
