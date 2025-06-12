@@ -10,7 +10,9 @@ public class Login extends javax.swing.JFrame {
 
     public Login() {
         initComponents();
+
          setLocationRelativeTo(null); // căn giữa màn hình
+        setLocationRelativeTo(null);
         getRootPane().setDefaultButton(btnLogin);
          try {
             java.awt.Image icon = java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/products.png"));

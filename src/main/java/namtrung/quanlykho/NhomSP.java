@@ -343,11 +343,8 @@ public class NhomSP extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tb_GrProduct);
         if (tb_GrProduct.getColumnModel().getColumnCount() > 0) {
-            tb_GrProduct.getColumnModel().getColumn(0).setResizable(false);
             tb_GrProduct.getColumnModel().getColumn(0).setPreferredWidth(10);
-            tb_GrProduct.getColumnModel().getColumn(1).setResizable(false);
             tb_GrProduct.getColumnModel().getColumn(1).setPreferredWidth(500);
-            tb_GrProduct.getColumnModel().getColumn(2).setResizable(false);
             tb_GrProduct.getColumnModel().getColumn(2).setPreferredWidth(200);
         }
 

@@ -1,17 +1,13 @@
 package DAO;
 
 import ConDB.CONNECTION;
-import ConDB.DBAccess;
 import DTO.NHOMSP;
-import DTO.SANPHAM;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import utils.IntHelper;
 import utils.StringHelper;
 
 /**
@@ -182,7 +178,7 @@ public class NHOMSP_DATA {
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Lỗi sữa Nhóm sản phẩm: " + e.getMessage(), "ERROR!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Lỗi sửa Nhóm sản phẩm: " + e.getMessage(), "ERROR!", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
 
