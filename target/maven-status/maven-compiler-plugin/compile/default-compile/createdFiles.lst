@@ -75,7 +75,6 @@ namtrung\quanlykho\QuanLyXuatHang$5.class
 DAO\UpperCase$1.class
 namtrung\quanlykho\NhomSP$9.class
 namtrung\quanlykho\QuanLyXuatHang$10.class
-namtrung\quanlykho\QuanLyXuatHang$16.class
 namtrung\quanlykho\MainFrame$5.class
 namtrung\quanlykho\NhomSP$3.class
 namtrung\quanlykho\QuanLyKho$8.class
@@ -150,4 +149,5 @@ namtrung\quanlykho\DSPhieuNhap$9.class
 DTO\SANPHAM.class
 DTO\CTPX.class
 namtrung\quanlykho\MainFrame$2.class
+namtrung\quanlykho\XuatHang$17.class
 namtrung\quanlykho\XuatHang$1.class

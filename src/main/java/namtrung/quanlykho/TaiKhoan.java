@@ -185,6 +185,7 @@ public class TaiKhoan extends javax.swing.JPanel {
         lb_passnew.setText("Mật khẩu mới :");
 
         btn_XacNhan.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_XacNhan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/check.png"))); // NOI18N
         btn_XacNhan.setText("Xác Nhận");
 
         lb_Tao.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -204,6 +205,7 @@ public class TaiKhoan extends javax.swing.JPanel {
         tf_name.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btn_Tao.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_Tao.setIcon(new javax.swing.ImageIcon(getClass().getResource("/save.png"))); // NOI18N
         btn_Tao.setText("Tạo");
 
         tf_passold.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -287,7 +289,7 @@ public class TaiKhoan extends javax.swing.JPanel {
                         .addGroup(panelTaiKhoanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_Tao)
                             .addComponent(btn_XacNhan))))
-                .addContainerGap(405, Short.MAX_VALUE))
+                .addContainerGap(393, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

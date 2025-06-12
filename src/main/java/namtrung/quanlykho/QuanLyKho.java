@@ -32,7 +32,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         OTHER_DATA.load_Cb_Brand(cb_Brand);
         OTHER_DATA.customTable(tb_DSSP);
         OTHER_DATA.customTable(tb_DSSP_Serial);
-        loadCB_Status();
+        //loadCB_Status();
         customControls();
     }
     
@@ -309,6 +309,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         pn_QLSP.setBackground(new java.awt.Color(255, 255, 255));
 
         cb_Status.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cb_Status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Đang bán", "Bị xoá" }));
         cb_Status.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Trạng thái", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 14))); // NOI18N
 
         pn_ChucNangQLSP.setBackground(new java.awt.Color(255, 255, 255));

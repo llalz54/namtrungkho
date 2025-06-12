@@ -4,6 +4,7 @@ import ConDB.DBAccess;
 import DAO.CTPX_DATA;
 import DAO.LOAISP_DATA;
 import DAO.NHOMSP_DATA;
+import DAO.NumberDocumentFilter;
 import DAO.NumberToWords;
 import DAO.OTHER_DATA;
 import DAO.PHIEUXUAT_DATA;
@@ -55,6 +56,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.text.AbstractDocument;
 
 /**
  *
@@ -75,6 +77,8 @@ public class QuanLyXuatHang extends JPanel {
         customControls();
         OTHER_DATA.customTable(tbPX);
         OTHER_DATA.customTable(tbSerial);
+        // Đặt DocumentFilter cho tf_giaXuat
+        ((AbstractDocument) tf_giaXuat.getDocument()).setDocumentFilter(new NumberDocumentFilter());
     }
 
     private void capNhatBangSerialTheoSoLuong() {
@@ -130,6 +134,7 @@ public class QuanLyXuatHang extends JPanel {
     private void loadChiTietPhieuXuat(int idpx) {
         try {
             System.out.println("idpx: " + idpx);
+            NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
             DBAccess acc = new DBAccess();
 
             // Lấy thông tin phiếu xuất, nhóm SP, loại SP
@@ -147,11 +152,23 @@ public class QuanLyXuatHang extends JPanel {
                 tf_NYCau.setText(rs.getString("NYCau"));
                 tf_ghiChu.setText(rs.getString("ghiChu"));
                 tf_soLuong.setText(rs.getString("quantity"));
-                tf_giaXuat.setText(rs.getString("price"));
                 tf_khachHang.setText(rs.getString("customer"));
                 tf_diaChi.setText(rs.getString("address"));
                 tf_HoaDon.setText(rs.getString("HoaDon"));
-                tf_DviXuat.setText(rs.getString("DonViXuat"));
+                long price = rs.getLong("price");
+                String formattedPrice = vnFormat.format(price);
+                tf_giaXuat.setText(formattedPrice);
+
+                String donVi = rs.getString("DonViXuat");
+                if (donVi.equalsIgnoreCase("CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG")) {
+                    donVi = "NAM TRUNG";
+                } else if (donVi.equalsIgnoreCase("CÔNG TY TNHH DỊCH VỤ THANH LÊ")) {
+                    donVi = "THANH LÊ";
+                } else if (donVi.equalsIgnoreCase("CÔNG TY TNHH XNK PP HÀNG CHUẨN")) {
+                    donVi = "HÀNG CHUẨN";
+                }
+                tf_DviXuat.setSelectedItem(donVi);
+
                 tf_ngayXuatHD.setText(rs.getString("ngayXuatHD"));
             }
             ps.close();
@@ -516,7 +533,16 @@ public class QuanLyXuatHang extends JPanel {
             String name = tbPX.getValueAt(selectedRow, 2).toString();
             int categoryId = loaisp_data.getCategoryIdByName(name);
             System.out.println("category " + categoryId);
-            long price = Long.parseLong(tf_giaXuat.getText().trim());
+
+            long price;
+            try {
+                // Lấy text, xóa dấu chấm và chuyển thành số
+                String priceText = tf_giaXuat.getText().replace(".", "");
+                price = Long.parseLong(priceText);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Giá xuất không hợp lệ");
+                return;
+            }
             String NYC = tf_NYCau.getText().trim();
             String ghiChu = tf_ghiChu.getText().trim();
             String customer = tf_khachHang.getText().trim();
@@ -525,12 +551,20 @@ public class QuanLyXuatHang extends JPanel {
             // Lấy danh sách serial từ bảng
             List<String> listSerial = new ArrayList<>();
             //ngayXuat
-            
+
             String ngayXuatStr = tbPX.getValueAt(selectedRow, 6).toString();
             //HoaDon
             String hoaDon = tf_HoaDon.getText().trim();
             //DonViXuat
-            String dviXuat = tf_DviXuat.getText().trim();
+
+            String dviXuat = (String) tf_DviXuat.getSelectedItem();
+            if (dviXuat.equalsIgnoreCase("NAM TRUNG")) {
+                dviXuat = "CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG";
+            } else if (dviXuat.equalsIgnoreCase("THANH LÊ")) {
+                dviXuat = "CÔNG TY TNHH DỊCH VỤ THANH LÊ";
+            } else if (dviXuat.equalsIgnoreCase("HÀNG CHUẨN")) {
+                dviXuat = "CÔNG TY TNHH XNK PP HÀNG CHUẨN";
+            }
             //ngayXuatHD
             String ngayXuatHD_Str = tf_ngayXuatHD.getText().trim();
             String ngayXuatHD = null;
@@ -671,7 +705,7 @@ public class QuanLyXuatHang extends JPanel {
             // Lấy thông tin chung
             String customer = firstCustomer;
             String address = tf_diaChi.getText().trim();
-            String DviXuat = tf_DviXuat.getText().trim();
+            String DviXuat = (String) tf_DviXuat.getSelectedItem();
             String hd = tf_HoaDon.getText().trim();
             String ngayXuatHD = tf_ngayXuatHD.getText().trim();
 
@@ -754,15 +788,28 @@ public class QuanLyXuatHang extends JPanel {
         PdfPTable companyInfo = new PdfPTable(2);
         companyInfo.setWidthPercentage(100);
         companyInfo.setWidths(new float[]{70f, 30f});
+        if (DviXuat.equalsIgnoreCase("NAM TRUNG")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG", ctyBold));
+            leftCompany.addElement(new Paragraph("HCM: 45 Thạch Thị Thanh, Phường Tân Định, Quận 1, TP. Hồ Chí Minh", fontcty));
+            leftCompany.addElement(new Paragraph("Đà Nẵng: 138 Tống Phước Phổ. P. Hoà Cường Bắc, Q. Hải Châu, TP.Đà Nẵng", fontcty));
+            leftCompany.addElement(new Paragraph("Hà Nội: Số 67 Hàng Giấy, P. Đồng Xuân, Q. Hoàn Kiếm, TP. Hà Nội", fontcty));
+            companyInfo.addCell(leftCompany);
 
-        PdfPCell leftCompany = new PdfPCell();
-        leftCompany.setBorder(Rectangle.NO_BORDER);
-        leftCompany.addElement(new Paragraph(DviXuat, ctyBold));
-        leftCompany.addElement(new Paragraph("HCM: 45 Thạch Thị Thanh, Phường Tân Định, Quận 1, TP. Hồ Chí Minh", fontcty));
-        leftCompany.addElement(new Paragraph("Đà Nẵng: 138 Tống Phước Phổ. P. Hoà Cường Bắc, Q. Hải Châu, TP.Đà Nẵng", fontcty));
-        leftCompany.addElement(new Paragraph("Hà Nội: Số 67 Hàng Giấy, P. Đồng Xuân, Q. Hoàn Kiếm, TP. Hà Nội", fontcty));
-        leftCompany.addElement(new Paragraph("VP Miền Nam: 268/34A Nguyễn Thái Bình, Phường 12, Q. Tân Bình, TP. Hồ Chí Minh", fontcty));
-        companyInfo.addCell(leftCompany);
+        } else if (DviXuat.equalsIgnoreCase("THANH LÊ")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY TNHH DỊCH VỤ THANH LÊ", ctyBold));
+            leftCompany.addElement(new Paragraph("268/34A Nguyễn Thái Bình, Phường 12, Q. Tân Bình, TP. Hồ Chí Minh", fontcty));
+            companyInfo.addCell(leftCompany);
+        } else if (DviXuat.equalsIgnoreCase("HÀNG CHUẨN")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY TNHH XNK PP HÀNG CHUẨN", ctyBold));
+            leftCompany.addElement(new Paragraph("Mộc Gia Building, 123 Cộng Hoà, Phường 12, Q. Tân Bình, TP. Hồ Chí Minh", fontcty));
+            companyInfo.addCell(leftCompany);
+        }
 
         PdfPCell rightEmpty = new PdfPCell(new Phrase(""));
         rightEmpty.setBorder(Rectangle.NO_BORDER);
@@ -906,14 +953,28 @@ public class QuanLyXuatHang extends JPanel {
         companyInfo.setWidthPercentage(100);
         companyInfo.setWidths(new float[]{70f, 30f});
 
-        PdfPCell leftCompany = new PdfPCell();
-        leftCompany.setBorder(Rectangle.NO_BORDER);
-        leftCompany.addElement(new Paragraph(DviXuat, ctyBold));
-        leftCompany.addElement(new Paragraph("HCM: 45 Thạch Thị Thanh, Phường Tân Định, Quận 1, TP. Hồ Chí Minh", fontcty));
-        leftCompany.addElement(new Paragraph("Đà Nẵng: 138 Tống Phước Phổ. P. Hoà Cường Bắc, Q. Hải Châu, TP.Đà Nẵng", fontcty));
-        leftCompany.addElement(new Paragraph("Hà Nội: Số 67 Hàng Giấy, P. Đồng Xuân, Q. Hoàn Kiếm, TP. Hà Nội", fontcty));
-        leftCompany.addElement(new Paragraph("VP Miền Nam: 268/34A Nguyễn Thái Bình, Phường 12, Q. Tân Bình, TP. HCM", fontcty));
-        companyInfo.addCell(leftCompany);
+        if (DviXuat.equalsIgnoreCase("NAM TRUNG")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG", ctyBold));
+            leftCompany.addElement(new Paragraph("HCM: 45 Thạch Thị Thanh, Phường Tân Định, Quận 1, TP. Hồ Chí Minh", fontcty));
+            leftCompany.addElement(new Paragraph("Đà Nẵng: 138 Tống Phước Phổ. P. Hoà Cường Bắc, Q. Hải Châu, TP.Đà Nẵng", fontcty));
+            leftCompany.addElement(new Paragraph("Hà Nội: Số 67 Hàng Giấy, P. Đồng Xuân, Q. Hoàn Kiếm, TP. Hà Nội", fontcty));
+            companyInfo.addCell(leftCompany);
+
+        } else if (DviXuat.equalsIgnoreCase("THANH LÊ")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY TNHH DỊCH VỤ THANH LÊ", ctyBold));
+            leftCompany.addElement(new Paragraph("268/34A Nguyễn Thái Bình, Phường 12, Q. Tân Bình, TP. Hồ Chí Minh", fontcty));
+            companyInfo.addCell(leftCompany);
+        } else if (DviXuat.equalsIgnoreCase("HÀNG CHUẨN")) {
+            PdfPCell leftCompany = new PdfPCell();
+            leftCompany.setBorder(Rectangle.NO_BORDER);
+            leftCompany.addElement(new Paragraph("CÔNG TY TNHH XNK PP HÀNG CHUẨN", ctyBold));
+            leftCompany.addElement(new Paragraph("Mộc Gia Building, 123 Cộng Hoà, Phường 12, Q. Tân Bình, TP. Hồ Chí Minh", fontcty));
+            companyInfo.addCell(leftCompany);
+        }
 
         PdfPCell rightEmpty = new PdfPCell(new Phrase(""));
         rightEmpty.setBorder(Rectangle.NO_BORDER);
@@ -946,7 +1007,6 @@ public class QuanLyXuatHang extends JPanel {
         rightInfo.addElement(new Paragraph("Số phiếu: XH" + hd, fontNormal));
         //   rightInfo.addElement(new Paragraph("Đơn giá: " + String.format("%,d", price), fontNormal));
         infoTable.addCell(rightInfo);
-
         document.add(infoTable);
         document.add(new Paragraph(" "));
         // Bảng thông tin sản phẩm (không có serial
@@ -1080,7 +1140,7 @@ public class QuanLyXuatHang extends JPanel {
         btnXuat = new javax.swing.JButton();
         tf_HoaDon = new javax.swing.JTextField();
         tf_ngayXuatHD = new javax.swing.JTextField();
-        tf_DviXuat = new javax.swing.JTextField();
+        tf_DviXuat = new javax.swing.JComboBox<>();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -1250,12 +1310,8 @@ public class QuanLyXuatHang extends JPanel {
         });
 
         tf_DviXuat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tf_DviXuat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NAM TRUNG", "THANH LÊ", "HÀNG CHUẨN" }));
         tf_DviXuat.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Đơn Vị Xuất", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 16))); // NOI18N
-        tf_DviXuat.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_DviXuatActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -1266,7 +1322,7 @@ public class QuanLyXuatHang extends JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 730, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -1276,17 +1332,18 @@ public class QuanLyXuatHang extends JPanel {
                                         .addComponent(tf_soLuong)
                                         .addComponent(tf_NYCau)
                                         .addComponent(tf_HoaDon, javax.swing.GroupLayout.Alignment.TRAILING))
-                                    .addGap(48, 48, 48)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(cb_Time, 0, 170, Short.MAX_VALUE)
-                                        .addComponent(tf_ghiChu)
-                                        .addComponent(tf_khachHang, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(tf_ngayXuatHD, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(tf_DviXuat)))
+                                    .addGap(71, 71, 71)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(tf_DviXuat, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(cb_Time, 0, 170, Short.MAX_VALUE)
+                                            .addComponent(tf_ghiChu)
+                                            .addComponent(tf_khachHang, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(tf_ngayXuatHD, javax.swing.GroupLayout.Alignment.LEADING))))
                                 .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
                             .addComponent(tf_diaChi, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addContainerGap(26, Short.MAX_VALUE))
+                        .addContainerGap(14, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1319,7 +1376,7 @@ public class QuanLyXuatHang extends JPanel {
                         .addGap(26, 26, 26)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
+                        .addGap(7, 7, 7)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(tf_HoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(tf_DviXuat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1345,7 +1402,7 @@ public class QuanLyXuatHang extends JPanel {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -1409,10 +1466,6 @@ public class QuanLyXuatHang extends JPanel {
     private void tf_ngayXuatHDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_ngayXuatHDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tf_ngayXuatHDActionPerformed
-
-    private void tf_DviXuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_DviXuatActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tf_DviXuatActionPerformed
 
     private void btn_LuuActionPerformed(java.awt.event.ActionEvent evt) {
         int selectedRow = tbPX.getSelectedRow();
@@ -1521,7 +1574,7 @@ public class QuanLyXuatHang extends JPanel {
     private javax.swing.JTable tbPX;
     private javax.swing.JTable tbSerial;
     private javax.swing.JTextField tfTim;
-    private javax.swing.JTextField tf_DviXuat;
+    private javax.swing.JComboBox<String> tf_DviXuat;
     private javax.swing.JTextField tf_HoaDon;
     private javax.swing.JTextField tf_NYCau;
     private javax.swing.JTextField tf_diaChi;

@@ -4,6 +4,7 @@ import ConDB.DBAccess;
 import DAO.LOAISP_DATA;
 import DAO.NCC_DATA;
 import DAO.NHOMSP_DATA;
+import DAO.NumberDocumentFilter;
 import DAO.OTHER_DATA;
 import DAO.PHIEUNHAP_DATA;
 import DAO.PHIEUXUAT_DATA;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.AbstractDocument;
 
 /**
  *
@@ -59,6 +61,8 @@ public class DSPhieuNhap extends JPanel {
         OTHER_DATA.load_Cb_Supplier(cb_Supplier);
         OTHER_DATA.customTable(tbPN);
         OTHER_DATA.customTable(tbSerial);
+        // Đặt DocumentFilter cho tf_giaXuat
+        ((AbstractDocument) tf_giaNhap.getDocument()).setDocumentFilter(new NumberDocumentFilter());
     }
 
     private void capNhatBangSerialTheoSoLuong() {
@@ -114,6 +118,7 @@ public class DSPhieuNhap extends JPanel {
     private void loadChiTietPhieuNhap(int idpn) {
         try {
             System.out.println("idpx: " + idpn);
+            NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
             DBAccess acc = new DBAccess();
 
             // Lấy thông tin phiếu xuất, nhóm SP, loại SP
@@ -132,7 +137,9 @@ public class DSPhieuNhap extends JPanel {
                 tf_NYCau.setText(rs.getString("NYCau"));
                 tf_ghiChu.setText(rs.getString("ghiChu"));
                 tf_soLuong.setText(rs.getString("quantity"));
-                tf_giaNhap.setText(rs.getString("price"));
+                long price = rs.getLong("price");
+                String formattedPrice = vnFormat.format(price);
+                tf_giaNhap.setText(formattedPrice);
                 tf_ngayNhap.setText(rs.getString("ngayNhap"));
                 cb_DiaChiKho.setSelectedItem(rs.getString("diaChiKho"));
                 tf_soHD.setText(rs.getString("soHoaDon"));
@@ -484,7 +491,16 @@ public class DSPhieuNhap extends JPanel {
 
             String ncc = cb_Supplier.getSelectedItem().toString();
             int ncc_id = ncc_data.getNCCId(ncc);
-            Long price = Long.parseLong(tf_giaNhap.getText().trim());
+
+            long price;
+            try {
+                // Lấy text, xóa dấu chấm và chuyển thành số
+                String priceText = tf_giaNhap.getText().replace(".", "");
+                price = Long.parseLong(priceText);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Giá nhập không hợp lệ");
+                return;
+            }
             String NYC = tf_NYCau.getText().trim();
             String hd = tf_soHD.getText().trim();
             String diaChiKho = (String) cb_DiaChiKho.getSelectedItem().toString();
@@ -494,9 +510,8 @@ public class DSPhieuNhap extends JPanel {
             // Lấy danh sách serial từ bảng
             List<String> listSerial = new ArrayList<>();
             //ngayNhap
-            
+
             String ngayNhap = tf_ngayNhap.getText().trim();
-           
 
             DefaultTableModel model = (DefaultTableModel) tbSerial.getModel();
             int rowCount = model.getRowCount();
@@ -513,7 +528,7 @@ public class DSPhieuNhap extends JPanel {
 
             // Gọi xử lý
             int idpn = Integer.parseInt(tbPN.getValueAt(selectedRow, 0).toString()); // Cột 0 là idpn
-            boolean ok = suaPhieuNhap(idpn, userId, categoryId, ncc_id, soLuong, price, ngayNhap, diaChiKho,hd, NYC, ghiChu, listSerial);
+            boolean ok = suaPhieuNhap(idpn, userId, categoryId, ncc_id, soLuong, price, ngayNhap, diaChiKho, hd, NYC, ghiChu, listSerial);
 
             if (ok) {
                 JOptionPane.showMessageDialog(null, "Sửa thành công!");
@@ -638,6 +653,7 @@ public class DSPhieuNhap extends JPanel {
         }
 
         btn_Luu.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btn_Luu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/save.png"))); // NOI18N
         btn_Luu.setText("Lưu");
         btn_Luu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -665,6 +681,7 @@ public class DSPhieuNhap extends JPanel {
         });
 
         btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        btnXoa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/delete.png"))); // NOI18N
         btnXoa.setText("Xoá");
         btnXoa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -722,8 +739,8 @@ public class DSPhieuNhap extends JPanel {
                                 .addComponent(tfTim, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnTim, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
-                                .addComponent(btnXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
+                                .addComponent(btnXoa))
                             .addComponent(jScrollPane1))
                         .addGap(18, 18, 18))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -744,9 +761,8 @@ public class DSPhieuNhap extends JPanel {
                             .addComponent(tf_giaNhap)
                             .addComponent(tf_ghiChu)
                             .addComponent(cb_DiaChiKho, 0, 192, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btn_Luu, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_Luu))
                 .addGap(14, 14, 14))
         );
         jPanel1Layout.setVerticalGroup(

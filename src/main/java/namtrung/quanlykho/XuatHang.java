@@ -72,7 +72,7 @@ public class XuatHang extends javax.swing.JPanel {
         cb_TenSP.setSelectedIndex(0);
         cb_Time.setSelectedIndex(0);
         cb_NCC1.setSelectedIndex(0);
-        tf_DviXuat.setText("");
+        tf_DviXuat.setSelectedIndex(0);
         tf_HD.setText("");
         tf_ngayXuatHD.setText("");
         // Xóa bảng serial
@@ -349,7 +349,16 @@ public class XuatHang extends javax.swing.JPanel {
 
             String hoaDon = tf_HD.getText().trim();
             //DonViXuat
-            String dviXuat = tf_DviXuat.getText().trim();
+            String dviXuat = (String) tf_DviXuat.getSelectedItem();
+            if (dviXuat.equalsIgnoreCase("NAM TRUNG")){
+                dviXuat = "CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG";
+            }
+            else if (dviXuat.equalsIgnoreCase("THANH LÊ")){
+                dviXuat = "CÔNG TY TNHH DỊCH VỤ THANH LÊ";
+            }
+            else if (dviXuat.equalsIgnoreCase("HÀNG CHUẨN")){
+                dviXuat = "CÔNG TY TNHH XNK PP HÀNG CHUẨN";
+            }
             //ngayXuatHD
             String ngayXuatHD_Str = tf_ngayXuatHD.getText().trim();
             String ngayXuatHD = null;
@@ -422,8 +431,8 @@ public class XuatHang extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         tf_ghiChu = new javax.swing.JTextField();
-        tf_DviXuat = new javax.swing.JTextField();
         tf_ngayXuatHD = new javax.swing.JTextField();
+        tf_DviXuat = new javax.swing.JComboBox<>();
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -576,11 +585,17 @@ public class XuatHang extends javax.swing.JPanel {
         tf_ghiChu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tf_ghiChu.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ghi Chú", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 16))); // NOI18N
 
-        tf_DviXuat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        tf_DviXuat.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Đơn Vị Xuất", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 16))); // NOI18N
-
         tf_ngayXuatHD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tf_ngayXuatHD.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ngày Xuất HD", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 16))); // NOI18N
+
+        tf_DviXuat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tf_DviXuat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NAM TRUNG", "THANH LÊ", "HÀNG CHUẨN" }));
+        tf_DviXuat.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Đơn Vị Xuất", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 16))); // NOI18N
+        tf_DviXuat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_DviXuatActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -604,16 +619,11 @@ public class XuatHang extends javax.swing.JPanel {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_Luu)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(tf_soLuong, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(cb_GrProduct1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(tf_ngayXuat)))
+                            .addComponent(tf_ngayXuat)
+                            .addComponent(tf_soLuong, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
+                            .addComponent(cb_GrProduct1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cb_TenSP, 0, 212, Short.MAX_VALUE)
@@ -632,8 +642,8 @@ public class XuatHang extends javax.swing.JPanel {
                                     .addComponent(cb_Time, javax.swing.GroupLayout.Alignment.LEADING, 0, 214, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(tf_DviXuat, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(tf_ngayXuatHD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(tf_ngayXuatHD, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tf_DviXuat, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addComponent(tf_diaChi))))
                 .addGap(66, 66, 66))
         );
@@ -814,6 +824,10 @@ public class XuatHang extends javax.swing.JPanel {
 
     }//GEN-LAST:event_tf_NYCKeyTyped
 
+    private void tf_DviXuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_DviXuatActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tf_DviXuatActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -864,7 +878,7 @@ public class XuatHang extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tb_SerialConfirm;
     private javax.swing.JTable tb_SerialNCC;
-    private javax.swing.JTextField tf_DviXuat;
+    private javax.swing.JComboBox<String> tf_DviXuat;
     private javax.swing.JTextField tf_HD;
     private javax.swing.JTextField tf_NYC;
     private javax.swing.JTextField tf_diaChi;

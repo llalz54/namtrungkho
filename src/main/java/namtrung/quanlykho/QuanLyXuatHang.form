@@ -36,7 +36,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="jScrollPane1" min="-2" pref="730" max="-2" attributes="0"/>
-                          <EmptySpace pref="22" max="32767" attributes="0"/>
+                          <EmptySpace pref="11" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
@@ -47,21 +47,23 @@
                                           <Component id="tf_NYCau" max="32767" attributes="0"/>
                                           <Component id="tf_HoaDon" alignment="1" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="cb_Time" pref="170" max="32767" attributes="0"/>
-                                          <Component id="tf_ghiChu" max="32767" attributes="0"/>
-                                          <Component id="tf_khachHang" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="tf_ngayXuatHD" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="tf_DviXuat" alignment="1" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="tf_DviXuat" min="-2" pref="170" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="cb_Time" pref="170" max="32767" attributes="0"/>
+                                              <Component id="tf_ghiChu" max="32767" attributes="0"/>
+                                              <Component id="tf_khachHang" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="tf_ngayXuatHD" alignment="0" max="32767" attributes="0"/>
+                                          </Group>
                                       </Group>
                                   </Group>
                                   <Component id="btn_Luu" alignment="0" min="-2" pref="63" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jScrollPane2" alignment="1" pref="408" max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" alignment="1" pref="431" max="32767" attributes="0"/>
                               <Component id="tf_diaChi" alignment="1" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="26" max="32767" attributes="0"/>
+                          <EmptySpace pref="14" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
@@ -103,7 +105,7 @@
                           <Component id="jScrollPane1" min="-2" pref="516" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="tf_HoaDon" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="tf_DviXuat" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -136,7 +138,7 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_Luu" min="-2" pref="31" max="-2" attributes="0"/>
-                  <EmptySpace pref="54" max="32767" attributes="0"/>
+                  <EmptySpace pref="52" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -516,10 +518,17 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_ngayXuatHDActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="tf_DviXuat">
+        <Component class="javax.swing.JComboBox" name="tf_DviXuat">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="NAM TRUNG"/>
+                <StringItem index="1" value="THANH L&#xca;"/>
+                <StringItem index="2" value="H&#xc0;NG CHU&#x1ea8;N"/>
+              </StringArray>
             </Property>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -529,9 +538,9 @@
               </Border>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_DviXuatActionPerformed"/>
-          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
