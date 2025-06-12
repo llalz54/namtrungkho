@@ -39,6 +39,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -55,7 +56,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.AbstractDocument;
 
 /**
@@ -79,6 +83,18 @@ public class QuanLyXuatHang extends JPanel {
         OTHER_DATA.customTable(tbSerial);
         // Đặt DocumentFilter cho tf_giaXuat
         ((AbstractDocument) tf_giaXuat.getDocument()).setDocumentFilter(new NumberDocumentFilter());
+        tbPX.getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (c instanceof JComponent && value != null) {
+                    ((JComponent) c).setToolTipText(value.toString());
+                }
+                return c;
+            }
+        });
     }
 
     private void capNhatBangSerialTheoSoLuong() {

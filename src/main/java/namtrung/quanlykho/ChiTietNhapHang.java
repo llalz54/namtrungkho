@@ -51,6 +51,12 @@ public class ChiTietNhapHang extends JPanel {
 
         // Đặt DocumentFilter cho txt_price
         ((AbstractDocument) txt_price.getDocument()).setDocumentFilter(new NumberDocumentFilter());
+        cb_Product.addActionListener(e -> {
+            Object selectedItem = cb_Product.getSelectedItem();
+            if (selectedItem != null) {
+                cb_Product.setToolTipText(selectedItem.toString());
+            }
+        });
     }
 
     private void completeSave() {

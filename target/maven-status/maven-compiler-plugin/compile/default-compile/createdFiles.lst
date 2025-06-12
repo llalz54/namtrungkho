@@ -38,6 +38,7 @@ namtrung\quanlykho\TaiKhoan.class
 utils\IntHelper.class
 namtrung\quanlykho\DSPhieuNhap$6.class
 namtrung\quanlykho\QuanLyKho$3.class
+namtrung\quanlykho\DSPhieuNhap$15.class
 DAO\PHIEUXUAT_DATA.class
 DTO\ProductInfo.class
 namtrung\quanlykho\XuatHang$14.class
@@ -75,6 +76,7 @@ namtrung\quanlykho\QuanLyXuatHang$5.class
 DAO\UpperCase$1.class
 namtrung\quanlykho\NhomSP$9.class
 namtrung\quanlykho\QuanLyXuatHang$10.class
+namtrung\quanlykho\QuanLyXuatHang$16.class
 namtrung\quanlykho\MainFrame$5.class
 namtrung\quanlykho\NhomSP$3.class
 namtrung\quanlykho\QuanLyKho$8.class
