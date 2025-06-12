@@ -92,6 +92,7 @@ public class SANPHAM_DATA {
             return null;
         }
     }
+    
 
     public ArrayList<SANPHAM> getSP_Category(int categoryID) {
         ArrayList<SANPHAM> allSP = getListSP();
@@ -106,9 +107,8 @@ public class SANPHAM_DATA {
     }
 
     public ArrayList<SANPHAM> getSPtheoSerial(String Serial) {
-        ArrayList<SANPHAM> allSP = getListSP();
         ArrayList<SANPHAM> dssp = new ArrayList<>();
-        for (SANPHAM sp : allSP) {
+        for (SANPHAM sp : listSP) {
             String serial = sp.getSerial().toLowerCase();
             if (serial.contains(Serial.toLowerCase())) {
                 dssp.add(sp);
@@ -116,6 +116,7 @@ public class SANPHAM_DATA {
         }
         return dssp;
     }
+    
     
     public ArrayList<SANPHAM> getSPTheoSerial_TK(String Serial) {
         ArrayList<SANPHAM> allSP = getlistSP_TK();

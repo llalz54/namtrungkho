@@ -31,15 +31,34 @@ public class NhomSP extends javax.swing.JPanel {
 
     private void completeAction() {
         txt_Name.setText("");
-        txt_Name.setEnabled(true);
-        cb_Status.setEnabled(true);
+
+        unableTXT();
         tb_GrProduct.clearSelection();
 
         action_QLNSP = "";
-        loadDataTable_NhomSP();
+
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+        btn_Save.setEnabled(false);
+        nhomsp_Data.docListnhomSP();
+        loadDataTable_NhomSP();        
+    }
+
+    private void enableTXT() {
+        txt_Name.setEnabled(true);
+        cb_Status.setEnabled(true);
+    }
+
+    private void unableTXT() {
+        txt_Name.setEnabled(false);
+        cb_Status.setEnabled(false);
     }
 
     private void check_Role() {
+        unableTXT();
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+        btn_Save.setEnabled(false);
         String role = Session.getInstance().getRole();
         if (!"admin".equalsIgnoreCase(role)) {
             pn_funtion.setVisible(false);
@@ -405,21 +424,28 @@ public class NhomSP extends javax.swing.JPanel {
     private void btn_CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CreateActionPerformed
         // TODO add your handling code here:
         action_QLNSP = "create";
+        txt_Name.setEnabled(true);
         txt_Name.setText("");
         txt_Name.setEditable(true);
         cb_Status.setSelectedItem("Đang dùng");
         cb_Status.setEnabled(false);
+
+        tb_GrProduct.clearSelection();
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+
+        btn_Save.setEnabled(true);
     }//GEN-LAST:event_btn_CreateActionPerformed
 
     private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
         // TODO add your handling code here:
-        action_QLNSP = "delete";
         int i = tb_GrProduct.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn nhà cung cấp để xoá", "Input warning", JOptionPane.WARNING_MESSAGE);
         } else {
-            txt_Name.setEnabled(false);
-            cb_Status.setEnabled(false);
+            action_QLNSP = "delete";
+            unableTXT();
+            btn_Save.setEnabled(true);
         }
     }//GEN-LAST:event_btn_DeleteActionPerformed
 
@@ -453,7 +479,7 @@ public class NhomSP extends javax.swing.JPanel {
                 }
                 default ->
                     JOptionPane.showMessageDialog(this, "Hành động không hợp lệ!!!", "Input warning", JOptionPane.WARNING_MESSAGE);
-                    
+
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi ghi nhóm sản phẩm", "ERROR!", JOptionPane.ERROR_MESSAGE);
@@ -462,6 +488,8 @@ public class NhomSP extends javax.swing.JPanel {
 
     private void tb_GrProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_GrProductMouseClicked
         // TODO add your handling code here:
+        btn_Update.setEnabled(true);
+        btn_Delete.setEnabled(true);
         int i = tb_GrProduct.getSelectedRow();
         DefaultTableModel dtm = (DefaultTableModel) tb_GrProduct.getModel();
         txt_Name.setText(dtm.getValueAt(i, 1).toString());
@@ -472,12 +500,14 @@ public class NhomSP extends javax.swing.JPanel {
     }//GEN-LAST:event_tb_GrProductMouseClicked
 
     private void btn_UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_UpdateActionPerformed
-        // TODO add your handling code here:
-        action_QLNSP = "update";
+        // TODO add your handling code here:       
         int i = tb_GrProduct.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn nhóm sản phẩm để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
         }
+        action_QLNSP = "update";
+        enableTXT();
+        btn_Save.setEnabled(true);
     }//GEN-LAST:event_btn_UpdateActionPerformed
 
     private void cbLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbLocSPActionPerformed

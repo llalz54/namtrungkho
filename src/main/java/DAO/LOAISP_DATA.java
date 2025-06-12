@@ -85,15 +85,17 @@ public class LOAISP_DATA {
     }
 
     public ArrayList<LOAISP> getDS_LoaiSP(String groupName, String brand) {
-        //ArrayList<LOAISP> fullList = getListLoaiSP();
+        ArrayList<LOAISP> fullList = getListLoaiSP();
         ArrayList<LOAISP> dssp = new ArrayList<>();
-        for (LOAISP sp : listLoaiSP) {
-            if (groupName.contains(sp.getGrName()) && brand.contains(sp.getBrand())) {
+        for (LOAISP sp : fullList) {
+            if (sp.getGrName().trim().equalsIgnoreCase(groupName) && sp.getBrand().trim().equalsIgnoreCase(brand)) {
                 dssp.add(sp);
             }
         }
         return dssp;
     }
+
+
 
     public static void create_LSP(int grID, String name, String status, String brand) {
         if (StringHelper.isNullOrBlank(name)) {

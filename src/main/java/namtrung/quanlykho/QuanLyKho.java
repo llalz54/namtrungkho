@@ -5,15 +5,14 @@ import ConDB.DBAccess;
 import DAO.LOAISP_DATA;
 import DAO.NHOMSP_DATA;
 import DAO.OTHER_DATA;
+import DAO.SANPHAM_DATA;
 import DAO.Session;
 import DTO.LOAISP;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
@@ -36,16 +35,19 @@ public class QuanLyKho extends javax.swing.JPanel {
         customControls();
     }
 
-    private final LOAISP_DATA loaisp_data = new LOAISP_DATA();
-    private final NHOMSP_DATA nhomsp_data = new NHOMSP_DATA();
+    private SANPHAM_DATA sanpham_data = new SANPHAM_DATA();
+    private LOAISP_DATA loaisp_data = new LOAISP_DATA();
+    private NHOMSP_DATA nhomsp_data = new NHOMSP_DATA();
 
     private String action_QLLSP = "";
     private String current_Name;
     private int current_cateID;
 
     private void check_Role() {
+        txt_Name.setEnabled(false);
+        cb_Status.setEnabled(false);
         btn_Update.setEnabled(false);
-        btn_delete.setEnabled(false);
+        btn_Delete.setEnabled(false);
         btn_Save.setEnabled(false);
         String role = Session.getInstance().getRole();
         if (!"admin".equalsIgnoreCase(role)) {
@@ -75,44 +77,40 @@ public class QuanLyKho extends javax.swing.JPanel {
 
     private void completeSave() {
         txt_Name.setText("");
-        txt_Name.setEnabled(true);
-        cb_Status.setEnabled(true);
+        txt_Name.setEnabled(false);
+        cb_Status.setEnabled(false);
 
         tb_DSSP.clearSelection();
+
+        action_QLLSP = "";
         btn_Update.setEnabled(false);
-        btn_delete.setEnabled(false);
+        btn_Delete.setEnabled(false);
         btn_Save.setEnabled(false);
     }
 
     private String convertStatus(String status) {
         String trangThai;
-        switch (status) {
-            case "0":
-                trangThai = "Ngừng kinh doanh";
-                break;
-            case "1":
-                trangThai = "Đang bán";
-                break;
-            default:
-                trangThai = "Không xác định";
-                break;
-        }
+        trangThai = switch (status) {
+            case "0" ->
+                "Ngừng kinh doanh";
+            case "1" ->
+                "Đang bán";
+            default ->
+                "Không xác định";
+        };
         return trangThai;
     }
 
     private String convertTrangThai(String trangThai) {
         String status;
-        switch (trangThai) {
-            case "Ngừng kinh doanh":
-                status = "0";
-                break;
-            case "Đang bán":
-                status = "1";
-                break;
-            default:
-                status = "-1";
-                break;
-        }
+        status = switch (trangThai) {
+            case "Ngừng kinh doanh" ->
+                "0";
+            case "Đang bán" ->
+                "1";
+            default ->
+                "-1";
+        };
         return status;
     }
 
@@ -225,7 +223,7 @@ public class QuanLyKho extends javax.swing.JPanel {
         cb_Status = new javax.swing.JComboBox<>();
         pn_ChucNangQLSP = new javax.swing.JPanel();
         btn_Create = new javax.swing.JButton();
-        btn_delete = new javax.swing.JButton();
+        btn_Delete = new javax.swing.JButton();
         btn_Save = new javax.swing.JButton();
         btn_Update = new javax.swing.JButton();
         txt_Name = new javax.swing.JTextField();
@@ -325,12 +323,12 @@ public class QuanLyKho extends javax.swing.JPanel {
             }
         });
 
-        btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/delete.png"))); // NOI18N
-        btn_delete.setText("Xoá");
-        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+        btn_Delete.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_Delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/delete.png"))); // NOI18N
+        btn_Delete.setText("Xoá");
+        btn_Delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_deleteActionPerformed(evt);
+                btn_DeleteActionPerformed(evt);
             }
         });
 
@@ -365,7 +363,7 @@ public class QuanLyKho extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addGroup(pn_ChucNangQLSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btn_Save, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                    .addComponent(btn_Delete, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
                 .addGap(26, 26, 26))
         );
         pn_ChucNangQLSPLayout.setVerticalGroup(
@@ -374,7 +372,7 @@ public class QuanLyKho extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(pn_ChucNangQLSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Create)
-                    .addComponent(btn_delete))
+                    .addComponent(btn_Delete))
                 .addGap(18, 18, 18)
                 .addGroup(pn_ChucNangQLSPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Update, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -437,18 +435,8 @@ public class QuanLyKho extends javax.swing.JPanel {
 
         cbLocSP.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         cbLocSP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tồn kho", "Đã bán" }));
-        cbLocSP.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbLocSPActionPerformed(evt);
-            }
-        });
 
         tfTimKiem.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        tfTimKiem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfTimKiemActionPerformed(evt);
-            }
-        });
 
         btn_LayDS.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btn_LayDS.setIcon(new javax.swing.ImageIcon(getClass().getResource("/refresh.png"))); // NOI18N
@@ -456,6 +444,12 @@ public class QuanLyKho extends javax.swing.JPanel {
         btn_LayDS.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_LayDSActionPerformed(evt);
+            }
+        });
+
+        btn_Search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_SearchActionPerformed(evt);
             }
         });
 
@@ -524,11 +518,10 @@ public class QuanLyKho extends javax.swing.JPanel {
         current_Name = dtm.getValueAt(i, 1).toString();
         txt_Name.setText(current_Name);
         cb_Status.setSelectedItem(dtm.getValueAt(i, 3).toString());
-
         current_cateID = loaisp_data.name_to_ID(current_Name);
 
         btn_Update.setEnabled(true);
-        btn_delete.setEnabled(true);
+        btn_Delete.setEnabled(true);
     }//GEN-LAST:event_tb_DSSPMouseClicked
 
     private void cb_GrProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_GrProductActionPerformed
@@ -545,21 +538,18 @@ public class QuanLyKho extends javax.swing.JPanel {
         loadDataTable_DSLSP(groupName, brand);
     }//GEN-LAST:event_cb_BrandActionPerformed
 
-    private void cbLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbLocSPActionPerformed
-
-    }//GEN-LAST:event_cbLocSPActionPerformed
-
-    private void tfTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfTimKiemActionPerformed
-
-    }//GEN-LAST:event_tfTimKiemActionPerformed
-
     private void btn_CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CreateActionPerformed
         // TODO add your handling code here:
         action_QLLSP = "create";
         txt_Name.setText("");
         txt_Name.setEditable(true);
+        txt_Name.setEnabled(true);
         cb_Status.setEnabled(false);
         cb_Status.setSelectedItem("Đang bán");
+
+        tb_DSSP.clearSelection();
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
         btn_Save.setEnabled(true);
     }//GEN-LAST:event_btn_CreateActionPerformed
 
@@ -572,9 +562,11 @@ public class QuanLyKho extends javax.swing.JPanel {
         }
         action_QLLSP = "update";
         btn_Save.setEnabled(true);
+        txt_Name.setEnabled(true);
+        cb_Status.setEnabled(true);
     }//GEN-LAST:event_btn_UpdateActionPerformed
 
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+    private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
         // TODO add your handling code here:
         int i = tb_DSSP.getSelectedRow();
         if (i < 0) {
@@ -586,7 +578,7 @@ public class QuanLyKho extends javax.swing.JPanel {
             cb_Status.setEnabled(false);
             btn_Save.setEnabled(true);
         }
-    }//GEN-LAST:event_btn_deleteActionPerformed
+    }//GEN-LAST:event_btn_DeleteActionPerformed
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         // TODO add your handling code here:
@@ -595,9 +587,9 @@ public class QuanLyKho extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Chưa chọn hành động để ghi !!!", "Input warning", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            String grName = cb_GrProduct.getSelectedItem().toString();
+            String grName = cb_GrProduct.getSelectedItem().toString().trim();
             int grID = nhomsp_data.name_to_ID(grName);
-            String brand = cb_Brand.getSelectedItem().toString();
+            String brand = cb_Brand.getSelectedItem().toString().trim();
             String name = txt_Name.getText().trim();
             String trangThai = cb_Status.getSelectedItem().toString();
             String status = convertTrangThai(trangThai);
@@ -653,14 +645,19 @@ public class QuanLyKho extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btn_LayDSActionPerformed
 
+    private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SearchActionPerformed
+        // TODO add your handling code here:
+        sanpham_data.getSPtheoSerial(tfTimKiem.getText().trim());
+    }//GEN-LAST:event_btn_SearchActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Create;
+    private javax.swing.JButton btn_Delete;
     private javax.swing.JButton btn_LayDS;
     private javax.swing.JButton btn_Save;
     private javax.swing.JButton btn_Search;
     private javax.swing.JButton btn_Update;
-    private javax.swing.JButton btn_delete;
     private javax.swing.JComboBox<String> cbLocSP;
     private javax.swing.JComboBox<String> cb_Brand;
     private javax.swing.JComboBox<String> cb_GrProduct;

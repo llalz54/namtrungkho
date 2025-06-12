@@ -220,7 +220,7 @@
                       <EmptySpace pref="36" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btn_Save" max="32767" attributes="0"/>
-                          <Component id="btn_delete" pref="100" max="32767" attributes="0"/>
+                          <Component id="btn_Delete" pref="100" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                   </Group>
@@ -232,7 +232,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btn_Create" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btn_delete" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btn_Delete" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -260,7 +260,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_CreateActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="btn_delete">
+            <Component class="javax.swing.JButton" name="btn_Delete">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="1"/>
@@ -271,7 +271,7 @@
                 <Property name="text" type="java.lang.String" value="Xo&#xe1;"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_deleteActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_DeleteActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btn_Save">
@@ -455,9 +455,6 @@
               </StringArray>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbLocSPActionPerformed"/>
-          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
@@ -468,9 +465,6 @@
               <Font name="Segoe UI" size="14" style="0"/>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfTimKiemActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_LayDS">
           <Properties>
@@ -487,6 +481,9 @@
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_Search">
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_SearchActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
