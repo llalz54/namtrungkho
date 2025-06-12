@@ -193,7 +193,6 @@ public class QuanLyKho extends javax.swing.JPanel {
                     rs.getString(2),
                     rs.getString(3),
                     vnFormat.format(rs.getLong(4)),
-                    rs.getString(4),
                     rs.getString(5),
                     rs.getString(6)
                 };
