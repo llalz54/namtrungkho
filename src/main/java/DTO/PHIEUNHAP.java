@@ -12,10 +12,12 @@ public class PHIEUNHAP {
     private int group_id;
     private long tongTien;
     private String tenLoai;
+    private String hoaDon;
+    private String diaChiKho;
     public PHIEUNHAP() {
     }
 
-    public PHIEUNHAP(int idpn, int userID, int categoryID,int group_id, int quantity, long price, String ngayNhap,int supplier_id, String supplier,String tenLoai) {
+    public PHIEUNHAP(int idpn, int userID, int categoryID,int group_id, int quantity, long price, String ngayNhap,String hoaDon, String diaChiKho,int supplier_id, String supplier,String tenLoai) {
         this.idpn = idpn;
         this.userID = userID;
         this.categoryID = categoryID;
@@ -23,11 +25,30 @@ public class PHIEUNHAP {
         this.quantity = quantity;
         this.price = price;
         this.ngayNhap = ngayNhap;
+        this.hoaDon = hoaDon;
+        this.diaChiKho = diaChiKho;
         this.supplier = supplier;
         this.group_id = group_id;
         this.tenLoai = tenLoai;
     }
 
+    public String getHoaDon() {
+        return hoaDon;
+    }
+
+    public void setHoaDon(String hoaDon) {
+        this.hoaDon = hoaDon;
+    }
+
+    public String getDiaChiKho() {
+        return diaChiKho;
+    }
+
+    public void setDiaChiKho(String diaChiKho) {
+        this.diaChiKho = diaChiKho;
+    }
+
+    
     public int getSupplier_id() {
         return supplier_id;
     }

@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import utils.StringHelper;
 
 /**
  *
@@ -20,7 +20,7 @@ public class LOAISP_DATA {
     private ArrayList<LOAISP> listLoaiSP = null;
 
     public LOAISP_DATA() {
-
+        docListLoaiSP();
     }
 
     public void docListLoaiSP() {
@@ -96,95 +96,185 @@ public class LOAISP_DATA {
     }
 
     public static void create_LSP(int grID, String name, String status, String brand) {
-        Connection conn = CONNECTION.getConnection();
-        String sql = "insert into LoaiSP values(?,?,?,?)";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
+        if (StringHelper.isNullOrBlank(name)) {
+            JOptionPane.showMessageDialog(null, "Tên sản phẩm không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(brand)) {
+            JOptionPane.showMessageDialog(null, "Tên hãng không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = CONNECTION.getConnection()) {
+
+            // Kiểm tra trùng tên (không phân biệt hoa thường)
+            String checkSql = "SELECT 1 FROM loaiSP WHERE LOWER(name) = LOWER(?)";
+            try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+                checkPs.setString(1, name.trim());
+                ResultSet rs = checkPs.executeQuery();
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null,
+                            "Tên sản phẩm đã tồn tại.",
+                            "Trùng tên", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+
+            // Xác nhận thêm mới
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Bạn có chắc chắn muốn thêm sản phẩm này?",
+                    "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            // Thực hiện thêm mới
+            String insertSql = "INSERT INTO loaiSP (group_id, name, status, brand) VALUES (?,?,?,?)";
+            try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                ps.setInt(1, grID);
+                ps.setString(2, StringHelper.safeTrim(name));
+                ps.setString(3, status);
+                ps.setString(4, brand);
+                int rows = ps.executeUpdate();
+                JOptionPane.showMessageDialog(null,
+                        rows > 0 ? "Thêm sản phẩm thành công!" : "Không thêm được nhóm sản phẩm.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi thêm sản phẩm: " + e.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    public static void update_GrProduct(int cateID, int grID, String name, String status, String brand) {
+        if (StringHelper.isNullOrBlank(name)) {
+            JOptionPane.showMessageDialog(null, "Tên sản phẩm không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (StringHelper.isNullOrBlank(brand)) {
+            JOptionPane.showMessageDialog(null, "Tên hãng không được để trống.",
+                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Nếu tên mới khác tên cũ thì kiểm tra trùng lặp
+        String checkSql = "SELECT 1 FROM loaiSP WHERE name = ? AND category_id != ?";
+        try (
+                Connection conn = CONNECTION.getConnection(); PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+            checkPs.setString(1, name);
+            checkPs.setInt(2, cateID);
+            ResultSet rs = checkPs.executeQuery();
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(null,
+                        "Tên sản phẩm đã tồn tại. Vui lòng chọn tên khác.",
+                        "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi kiểm tra tên sản phẩm: " + e.getMessage(),
+                    "ERROR!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return;
+        }
+        // Hỏi xác nhận trước khi sửa
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Bạn có chắc chắn muốn sửa sản phẩm này?",
+                "Xác nhận sửa", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Người dùng không đồng ý, thoát hàm
+        }
+        String sql = "UPDATE LoaiSP set group_id=?, name=? , status=?, brand=? WHERE category_id= ?";
+        try (
+                Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, grID);
             ps.setString(2, name);
             ps.setString(3, status);
             ps.setString(4, brand);
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            JOptionPane.showMessageDialog(null, "Thêm loại sản phẩm thành công!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Lỗi thêm loại sản phẩm!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+            ps.setInt(5, cateID);
 
-    public static void update_LSP(int cateID, int grID, String name, String status, String brand) {
-        Connection conn = CONNECTION.getConnection();
-        String sql = "UPDATE LoaiSP SET group_id='" + grID + "', name='" + name + "', status='" + status + "', brand='" + brand + "'  where category_id='" + cateID + "'";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.executeUpdate();
-            ps.close();
-            conn.close();
-            JOptionPane.showMessageDialog(null, "Sửa sản phẩm thành công!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Lỗi sửa sản phẩm!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+            int rows = ps.executeUpdate();
 
-    public static void delete_LSP(int cateID) {
-        Connection conn = CONNECTION.getConnection();
-        if (check_HDLSP(cateID) == false) {
-            String sql = "DELETE FROM LoaiSP WHERE category_id='" + cateID + "'";
-            try {
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.executeUpdate();
-                ps.close();
-                conn.close();
-                JOptionPane.showMessageDialog(null, "Xoá loại sản phẩm thành công!");
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Lỗi khi xoá loại sản phẩm!", "ERROR!", JOptionPane.ERROR_MESSAGE);
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(null, "Sửa sản phẩm thành công!");
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Không tìm thấy sản phẩm để cập nhật.",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
-        } else {
-            String sql1 = "UPDATE LoaiSP SET status='0' WHERE category_id='" + cateID + "'";
-            try {
-                PreparedStatement ps1 = conn.prepareStatement(sql1);
-                ps1.executeUpdate();
-                ps1.close();
-                conn.close();
-                JOptionPane.showMessageDialog(null, "Dòng sản phẩm này đã được ghi phiếu nhập => Thay đổi trạng thái!");
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Lỗi cập nhật trạng thái sản phẩm!", "ERROR!", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private static boolean check_HDLSP(int cateID) {
-        Connection conn = CONNECTION.getConnection();
-        String sql = "SELECT category_id FROM PhieuNhap WHERE category_id ='" + cateID + "'";
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return true;
-            }
-            rs.close();
-            ps.close();
-            conn.close();
 
         } catch (Exception e) {
-            System.out.println("Lỗi hàm kiểm tra hoạt động loại sản phẩm!");
+            JOptionPane.showMessageDialog(null, "Lỗi sửa sản phẩm: " + e.getMessage(), "ERROR!", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-        return false;
+
     }
 
-    public boolean checkName_LSP(String name) {
-        boolean check = false;
+    public static void delete_GrProduct(int cate_ID) {
         try {
-            DBAccess acc = new DBAccess();
-            ResultSet rs = acc.Query("SELECT name FROM LoaiSP WHERE name ='" + name + "'");
-            if (rs.next()) {
-                check = true;
+            // 1. Hỏi xác nhận người dùng
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "Bạn có chắc chắn muốn xóa sản phẩm này?",
+                    "Xác nhận xóa", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // Người dùng chọn "Không" => thoát hàm, không xóa
             }
-        } catch (SQLException e) {
-            System.out.println("Lỗi kiểm tra trùng name");
+
+            // 2. Kiểm tra xem cate_id có đang được sử dụng không
+            boolean isUsed = isCategoryIdInUse(cate_ID);
+
+            // 3. Chọn câu SQL và thông điệp phù hợp
+            String sql = isUsed
+                    ? "UPDATE LoaiSP SET status = 0 WHERE category_id = ?"
+                    : "DELETE FROM LoaiSP WHERE category_id = ?";
+
+            String message = isUsed
+                    ? "Sản phẩm đang được sử dụng, đã chuyển sang trạng thái 'BỊ XOÁ'."
+                    : "Xóa sản phẩm thành công!";
+
+            // 4. Thực hiện câu lệnh
+            try (Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                ps.setInt(1, cate_ID);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, message, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Không tìm thấy sản phẩm để xử lý.",
+                            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Đã xảy ra lỗi khi xử lý xóa sản phẩm:\n" + e.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-        return check;
+    }
+
+    private static boolean isCategoryIdInUse(int cate_ID) {
+        String sql = "SELECT TOP 1 1 FROM PhieuNhap WHERE category_id = ?";
+        try (Connection conn = CONNECTION.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, cate_ID);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true nếu đang được sử dụng
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Đã xảy ra lỗi khi kiểm tra cateInUse:\n" + e.getMessage(),
+                    "Lỗi kiểm tra dữ liệu",
+                    JOptionPane.ERROR_MESSAGE);
+            return true;
+        }
     }
 
     public int name_to_ID(String name) {
