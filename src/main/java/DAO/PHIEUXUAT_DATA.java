@@ -199,7 +199,6 @@ public class PHIEUXUAT_DATA {
             }
 
             conn.commit(); // Commit transaction
-            JOptionPane.showMessageDialog(null, "Xuất hàng thành công! Số phiếu: " + idpx);
             return true;
 
         } catch (Exception e) {

@@ -149,7 +149,7 @@ public class QuanLyKho extends javax.swing.JPanel {
             n++;
         }
         tb_DSSP.setModel(dtm);
-    }
+    }   
 
     private void loadDataTable_DSTonKho(String status, int categoryID) {
         NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));

@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -35,22 +34,22 @@ import utils.StringHelper;
 import utils.UpperCaseEditor;
 
 public class ChiTietNhapHang extends JPanel {
-
+    
     private CTPN_DATA ctpn_Data = new CTPN_DATA();
     private PHIEUNHAP_DATA pn_Data = new PHIEUNHAP_DATA();
     private NHOMSP_DATA gr_Data = new NHOMSP_DATA();
     private LOAISP_DATA loaiSP_Data = new LOAISP_DATA();
     private NCC_DATA ncc_Data = new NCC_DATA();
-
+    
     private String action = "";
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
+    
     public ChiTietNhapHang() {
         initComponents();
         OTHER_DATA.loadCBDM(cb_GrProduct);
         OTHER_DATA.load_Cb_Brand(cb_Brand);
         OTHER_DATA.load_Cb_Supplier(cb_Supplier);
-
+        
         txt_ngayNhap.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         // Đặt DocumentFilter cho txt_price
@@ -74,7 +73,7 @@ public class ChiTietNhapHang extends JPanel {
             }
         });
     }
-
+    
     private void completeSave() {
         txt_GhiChu.setText("");
         txt_NgYeuCau.setText("");
@@ -88,17 +87,17 @@ public class ChiTietNhapHang extends JPanel {
         dtm.setRowCount(0);
         action = "";
     }
-
+    
     private void create_TB_CTPN(int quantity) {
-
+        
         int column = 10;
         int row = (int) Math.ceil((double) quantity / 10);
-
+        
         String[] columnNames = new String[column];
         for (int i = 0; i < column; i++) {
             columnNames[i] = "" + (i + 1);
         }
-
+        
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -106,27 +105,27 @@ public class ChiTietNhapHang extends JPanel {
                 return cellIndex < quantity; // chỉ các ô trong số lượng cho phép mới được chỉnh
             }
         };
-
+        
         for (int i = 0; i < row; i++) {
             model.addRow(new Object[column]);
         }
-
+        
         tb_CTPN.setModel(model);
         tb_CTPN.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         for (int i = 0; i < tb_CTPN.getColumnCount(); i++) {
             tb_CTPN.getColumnModel().getColumn(i).setCellEditor(new UpperCaseEditor());
         }
-
+        
         String notification = "Hãy nhập Serial cho các thiết bị vừa nhập";
         JOptionPane.showMessageDialog(null, notification, "", JOptionPane.INFORMATION_MESSAGE);
     }
-
+    
     private boolean isTableSerialFilled(JTable table, int quantity) {
         int columnCount = table.getColumnCount();
         int rowCount = table.getRowCount();
-
+        
         int filledCount = 0;
-
+        
         for (int row = 0; row < rowCount; row++) {
             for (int col = 0; col < columnCount; col++) {
                 int cellIndex = row * columnCount + col;
@@ -139,21 +138,33 @@ public class ChiTietNhapHang extends JPanel {
                 }
             }
         }
-
+        
         return filledCount == quantity;
     }
-
+    
     private void loadCB_ListSP(String gr, String brand) {
         cb_Product.removeAllItems();
         int group_ID = gr_Data.name_to_ID(gr);
         try {
             DBAccess acc = new DBAccess();
             ResultSet rs = acc.Query("SELECT name FROM LoaiSP WHERE group_id = '" + group_ID + "' AND BRAND ='" + brand + "' AND status = 1");
+            // Kiểm tra rỗng
+            if (!rs.next()) {                
+                btn_Confirm.setEnabled(false);
+                return; // Không có dữ liệu, thoát luôn
+            }
+            btn_Confirm.setEnabled(true);
+            // Có dữ liệu, thêm dòng đầu tiên
+            cb_Product.addItem(rs.getString("name").trim());
+
+            // Tiếp tục thêm các dòng tiếp theo nếu có
             while (rs.next()) {
                 cb_Product.addItem(rs.getString("name").trim());
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi loadCB_ListSP!", "ERROR!", JOptionPane.ERROR_MESSAGE);
+            btn_Confirm.setEnabled(false);
+            return; // Không có dữ liệu, thoát luôn            
         }
     }
 
@@ -396,7 +407,7 @@ public class ChiTietNhapHang extends JPanel {
         String nyc = StringHelper.safeTrim(txt_NgYeuCau.getText());
 //        String hoadon = StringHelper.safeTrim(txt_SoHoaDon.getText());
         String soLuong = StringHelper.safeTrim(txt_Quantity.getText());
-
+        
         if (StringHelper.isNullOrBlank(giaNhap)) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập giá nhập.");
             return;
@@ -424,7 +435,7 @@ public class ChiTietNhapHang extends JPanel {
             JOptionPane.showMessageDialog(this, "Giá xuất không hợp lệ. Vui lòng nhập số nguyên.");
             return;
         }
-
+        
         int quantity = Integer.parseInt(soLuong);
         create_TB_CTPN(quantity);
         action = "confirm";
@@ -470,7 +481,7 @@ public class ChiTietNhapHang extends JPanel {
         String soHD = txt_SoHoaDon.getText().trim();
         String ngYeuCau = txt_NgYeuCau.getText().trim();
         String ghiChu = txt_GhiChu.getText();
-
+        
         Connection conn = CONNECTION.getConnection();
         try {
             conn.setAutoCommit(false);
@@ -487,7 +498,7 @@ public class ChiTietNhapHang extends JPanel {
             ps.setString(9, ngYeuCau);
             ps.setString(10, ghiChu);
             ps.execute();
-
+            
             ResultSet rs = ps.getGeneratedKeys();
             int idpn = 0;
             while (rs.next()) {
@@ -495,12 +506,12 @@ public class ChiTietNhapHang extends JPanel {
             }
             rs.close();
             ps.close();
-
+            
             String sql = "EXEC dbo.SP_INSERT_CTPN @CT=?";
             SQLServerDataTable dt = new SQLServerDataTable();
             dt.addColumnMetadata("idpn", java.sql.Types.INTEGER);
             dt.addColumnMetadata("serial", java.sql.Types.NVARCHAR);
-
+            
             DefaultTableModel model1 = (DefaultTableModel) tb_CTPN.getModel();
             for (int row = 0; row < model1.getRowCount(); row++) {
                 for (int col = 0; col < model1.getColumnCount(); col++) {
@@ -520,7 +531,7 @@ public class ChiTietNhapHang extends JPanel {
             conn.commit();
             conn.setAutoCommit(true);
             conn.close();
-
+            
             completeSave();
             JOptionPane.showMessageDialog(null, "Ghi phiếu nhập thành công!");
         } catch (SQLException e) {
@@ -528,7 +539,7 @@ public class ChiTietNhapHang extends JPanel {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btn_GhiPhieuActionPerformed
-
+    
     private void cb_GrProductActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         String group = cb_GrProduct.getSelectedItem() != null ? cb_GrProduct.getSelectedItem().toString().trim() : "";

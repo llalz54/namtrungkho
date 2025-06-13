@@ -283,7 +283,7 @@ public class XuatHang extends javax.swing.JPanel {
                 for (int i = 0; i < confirmModel.getRowCount(); i++) {
                     if (serial.equals(confirmModel.getValueAt(i, 1))) {
                         confirmModel.removeRow(i);
-// Cập nhật lại STT
+                // Cập nhật lại STT
                         for (int j = 0; j < confirmModel.getRowCount(); j++) {
                             confirmModel.setValueAt(j + 1, j, 0); // cột 0 là STT
                         }
@@ -338,7 +338,6 @@ public class XuatHang extends javax.swing.JPanel {
         try {
 
             int userId = Session.getInstance().getUserId();
-            System.out.println("id user = " + userId);
             int categoryId = 0;
             for (LOAISP loaisp : loaisps) {
                 if (loaisp.getName().equals(cb_TenSP.getSelectedItem())) {

@@ -32,40 +32,13 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                  <EmptySpace pref="21" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="jScrollPane1" min="-2" pref="730" max="-2" attributes="0"/>
-                          <EmptySpace pref="11" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="tf_ngayXuat" pref="190" max="32767" attributes="0"/>
-                                          <Component id="tf_giaXuat" max="32767" attributes="0"/>
-                                          <Component id="tf_soLuong" max="32767" attributes="0"/>
-                                          <Component id="tf_NYCau" max="32767" attributes="0"/>
-                                          <Component id="tf_HoaDon" alignment="1" max="32767" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="tf_DviXuat" min="-2" pref="170" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="cb_Time" pref="170" max="32767" attributes="0"/>
-                                              <Component id="tf_ghiChu" max="32767" attributes="0"/>
-                                              <Component id="tf_khachHang" alignment="0" max="32767" attributes="0"/>
-                                              <Component id="tf_ngayXuatHD" alignment="0" max="32767" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                  </Group>
-                                  <Component id="btn_Luu" alignment="0" min="-2" pref="63" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="jScrollPane2" alignment="1" pref="431" max="32767" attributes="0"/>
-                              <Component id="tf_diaChi" alignment="1" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace pref="14" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="jLabel1" min="-2" pref="241" max="-2" attributes="0"/>
                               <Group type="102" attributes="0">
@@ -76,12 +49,36 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnTim" min="-2" pref="53" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="btnXuat" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-                          <Component id="btnXoa" min="-2" pref="66" max="-2" attributes="0"/>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="btnXoa" min="-2" max="-2" attributes="0"/>
                       </Group>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="tf_ngayXuat" pref="190" max="32767" attributes="0"/>
+                              <Component id="tf_giaXuat" max="32767" attributes="0"/>
+                              <Component id="tf_soLuong" max="32767" attributes="0"/>
+                              <Component id="tf_NYCau" max="32767" attributes="0"/>
+                              <Component id="tf_HoaDon" alignment="1" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="tf_DviXuat" min="-2" pref="170" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="cb_Time" pref="170" max="32767" attributes="0"/>
+                                  <Component id="tf_ghiChu" max="32767" attributes="0"/>
+                                  <Component id="tf_khachHang" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="tf_ngayXuatHD" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <Component id="jScrollPane2" alignment="1" pref="431" max="32767" attributes="0"/>
+                      <Component id="tf_diaChi" alignment="1" max="32767" attributes="0"/>
+                      <Component id="btn_Luu" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -308,6 +305,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/save.png"/>
             </Property>
+            <Property name="text" type="java.lang.String" value="L&#x1b0;u"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_LuuActionPerformed"/>
@@ -417,6 +415,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/delete.png"/>
             </Property>
+            <Property name="text" type="java.lang.String" value="Xo&#xe1;"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnXoaActionPerformed"/>
