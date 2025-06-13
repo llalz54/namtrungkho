@@ -13,6 +13,7 @@ import DAO.PHIEUNHAP_DATA;
 import DAO.Session;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
 import com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement;
+import java.awt.Component;
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +24,9 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -55,6 +59,18 @@ public class ChiTietNhapHang extends JPanel {
             Object selectedItem = cb_Product.getSelectedItem();
             if (selectedItem != null) {
                 cb_Product.setToolTipText(selectedItem.toString());
+            }
+        });
+        cb_Product.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    label.setText(value.toString());
+                    label.setToolTipText(value.toString()); // Tooltip từng option
+                }
+                return label;
             }
         });
     }
@@ -424,9 +440,9 @@ public class ChiTietNhapHang extends JPanel {
         if (tb_CTPN.isEditing()) {
             tb_CTPN.getCellEditor().stopCellEditing();
         }
-        
+
         int quantity = Integer.parseInt(txt_Quantity.getText());
-        
+
         if (isTableSerialFilled(tb_CTPN, quantity)) {
             System.out.println("Đã nhập đủ Serial.");
         } else {
@@ -438,7 +454,7 @@ public class ChiTietNhapHang extends JPanel {
         String supplier = cb_Supplier.getSelectedItem().toString();
         int supplier_ID = ncc_Data.name_to_ID(supplier);
         String ngayNhap = txt_ngayNhap.getText().trim();
-        
+
         long price;
         try {
             // Lấy text, xóa dấu chấm và chuyển thành số

@@ -76,6 +76,7 @@ namtrung\quanlykho\QuanLyXuatHang$5.class
 DAO\UpperCase$1.class
 namtrung\quanlykho\NhomSP$9.class
 namtrung\quanlykho\QuanLyXuatHang$10.class
+namtrung\quanlykho\ChiTietNhapHang$11.class
 namtrung\quanlykho\QuanLyXuatHang$16.class
 namtrung\quanlykho\MainFrame$5.class
 namtrung\quanlykho\NhomSP$3.class
@@ -128,6 +129,7 @@ namtrung\quanlykho\DSPhieuNhap$12.class
 namtrung\quanlykho\QuanLyXuatHang$12.class
 DAO\NCC_DATA.class
 utils\UpperCaseEditor$1.class
+namtrung\quanlykho\XuatHang$18.class
 namtrung\quanlykho\ChiTietNhapHang$5.class
 namtrung\quanlykho\QuanLyXuatHang$9.class
 DAO\PHIEUNHAP_DATA.class

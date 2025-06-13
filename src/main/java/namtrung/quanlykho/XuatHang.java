@@ -12,6 +12,7 @@ import DAO.Session;
 import DTO.LOAISP;
 import DTO.NCC;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,8 +25,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -61,6 +64,18 @@ public class XuatHang extends javax.swing.JPanel {
             Object selectedItem = cb_TenSP.getSelectedItem();
             if (selectedItem != null) {
                 cb_TenSP.setToolTipText(selectedItem.toString());
+            }
+        });
+        cb_TenSP.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    label.setText(value.toString());
+                    label.setToolTipText(value.toString()); // Tooltip từng option
+                }
+                return label;
             }
         });
 
