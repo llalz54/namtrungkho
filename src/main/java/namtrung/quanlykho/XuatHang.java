@@ -12,6 +12,7 @@ import DAO.Session;
 import DTO.LOAISP;
 import DTO.NCC;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,8 +25,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -57,6 +60,24 @@ public class XuatHang extends javax.swing.JPanel {
         tf_ngayXuatHD.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         // Đặt DocumentFilter cho tf_giaXuat
         ((AbstractDocument) tf_giaXuat.getDocument()).setDocumentFilter(new NumberDocumentFilter());
+        cb_TenSP.addActionListener(e -> {
+            Object selectedItem = cb_TenSP.getSelectedItem();
+            if (selectedItem != null) {
+                cb_TenSP.setToolTipText(selectedItem.toString());
+            }
+        });
+        cb_TenSP.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    label.setText(value.toString());
+                    label.setToolTipText(value.toString()); // Tooltip từng option
+                }
+                return label;
+            }
+        });
 
     }
 
@@ -108,8 +129,8 @@ public class XuatHang extends javax.swing.JPanel {
             });
         }
     }
-// Kiểm tra đã có serial trong bảng confirm chưa
 
+// Kiểm tra đã có serial trong bảng confirm chưa
     private boolean isSerialAlreadyConfirmed(String serial) {
         DefaultTableModel model = (DefaultTableModel) tb_SerialConfirm.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -350,13 +371,11 @@ public class XuatHang extends javax.swing.JPanel {
             String hoaDon = tf_HD.getText().trim();
             //DonViXuat
             String dviXuat = (String) tf_DviXuat.getSelectedItem();
-            if (dviXuat.equalsIgnoreCase("NAM TRUNG")){
+            if (dviXuat.equalsIgnoreCase("NAM TRUNG")) {
                 dviXuat = "CÔNG TY CP ĐẦU TƯ KT TM NAM TRUNG";
-            }
-            else if (dviXuat.equalsIgnoreCase("THANH LÊ")){
+            } else if (dviXuat.equalsIgnoreCase("THANH LÊ")) {
                 dviXuat = "CÔNG TY TNHH DỊCH VỤ THANH LÊ";
-            }
-            else if (dviXuat.equalsIgnoreCase("HÀNG CHUẨN")){
+            } else if (dviXuat.equalsIgnoreCase("HÀNG CHUẨN")) {
                 dviXuat = "CÔNG TY TNHH XNK PP HÀNG CHUẨN";
             }
             //ngayXuatHD
@@ -752,7 +771,7 @@ public class XuatHang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ. Vui lòng nhập số nguyên.");
             return;
         }
-     
+
         long gia;
         try {
             gia = Long.parseLong(giaXuat);
@@ -816,7 +835,7 @@ public class XuatHang extends javax.swing.JPanel {
         char c = evt.getKeyChar();
         String input = tf_NYC.getText().trim();
         // Nếu không phải số và không phải phím xóa (backspace), thì hủy ký tự nhập
-        if (c != '\b' && c!= ' ' && !Character.isLetter(c)) {
+        if (c != '\b' && c != ' ' && !Character.isLetter(c)) {
             evt.consume(); // chặn không cho nhập
             java.awt.Toolkit.getDefaultToolkit().beep(); // kêu beep để báo
             JOptionPane.showMessageDialog(this, "Vui lòng nhập chữ cái!");

@@ -37,6 +37,14 @@ public class QuanLyNCC extends javax.swing.JPanel {
         txt_diaChi.setText("");
     }
 
+    private void unableTXT() {
+        txt_Name.setEnabled(false);
+        txt_tenGoiNho.setEnabled(false);
+        txt_MST.setEnabled(false);
+        txt_diaChi.setEnabled(false);
+        cb_Status.setEnabled(false);
+    }
+
     private void enableTXT() {
         txt_Name.setEnabled(true);
         txt_tenGoiNho.setEnabled(true);
@@ -47,13 +55,24 @@ public class QuanLyNCC extends javax.swing.JPanel {
 
     private void completeSave() {
         clearTXT();
-        enableTXT();
+        unableTXT();
         action_QLNCC = "";
         tb_Supplier.clearSelection();
+
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+        btn_Save.setEnabled(false);
+        
+        ncc_data.docListNCC();
         loadDataTable_DSNCC();
     }
 
     private void check_Role() {
+
+        unableTXT();
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+        btn_Save.setEnabled(false);
         String role = Session.getInstance().getRole();
         if (!"admin".equalsIgnoreCase(role)) {
             pn_funtion.setVisible(false);
@@ -82,33 +101,27 @@ public class QuanLyNCC extends javax.swing.JPanel {
 
     private String convertStatus(String status) {
         String trangThai;
-        switch (status) {
-            case "0":
-                trangThai = "Bị xoá";
-                break;
-            case "1":
-                trangThai = "Đối tác";
-                break;
-            default:
-                trangThai = "Không xác định";
-                break;
-        }
+        trangThai = switch (status) {
+            case "0" ->
+                "Bị xoá";
+            case "1" ->
+                "Đối tác";
+            default ->
+                "Không xác định";
+        };
         return trangThai;
     }
 
     private String convertTrangThai(String trangThai) {
         String status;
-        switch (trangThai) {
-            case "Bị xoá":
-                status = "0";
-                break;
-            case "Đối tác":
-                status = "1";
-                break;
-            default:
-                status = "-1";
-                break;
-        }
+        status = switch (trangThai) {
+            case "Bị xoá" ->
+                "0";
+            case "Đối tác" ->
+                "1";
+            default ->
+                "-1";
+        };
         return status;
     }
 
@@ -151,15 +164,12 @@ public class QuanLyNCC extends javax.swing.JPanel {
         ArrayList<NCC> dsncc = null;
 
         switch (selected) {
-            case "Tất cả":
+            case "Tất cả" ->
                 dsncc = ncc_data.getListNCC();
-                break;
-            case "Đối tác":
+            case "Đối tác" ->
                 dsncc = ncc_data.getListNCC_Status("1");
-                break;
-            case "Bị xoá":
+            case "Bị xoá" ->
                 dsncc = ncc_data.getListNCC_Status("0");
-                break;
         }
 
         DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
@@ -446,6 +456,7 @@ public class QuanLyNCC extends javax.swing.JPanel {
 
     private void btn_CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CreateActionPerformed
         // TODO add your handling code here:
+        enableTXT();
         action_QLNCC = "create";
         txt_Name.setText("");
         txt_Name.setEditable(true);
@@ -457,20 +468,24 @@ public class QuanLyNCC extends javax.swing.JPanel {
         txt_MST.setEditable(true);
         cb_Status.setSelectedItem("Đối tác");
         cb_Status.setEnabled(false);
+
+        tb_Supplier.clearSelection();
+        btn_Update.setEnabled(false);
+        btn_Delete.setEnabled(false);
+        btn_Save.setEnabled(true);
     }//GEN-LAST:event_btn_CreateActionPerformed
 
     private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
         // TODO add your handling code here:
-        action_QLNCC = "delete";
         int i = tb_Supplier.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn nhà cung cấp để xoá", "Input warning", JOptionPane.WARNING_MESSAGE);
+            return;
         } else {
-            txt_Name.setEnabled(false);
-            txt_tenGoiNho.setEnabled(false);
-            txt_MST.setEnabled(false);
-            txt_diaChi.setEnabled(false);
-            cb_Status.setEnabled(false);
+
+            action_QLNCC = "delete";
+            unableTXT();
+            btn_Save.setEnabled(true);
         }
     }//GEN-LAST:event_btn_DeleteActionPerformed
 
@@ -524,7 +539,10 @@ public class QuanLyNCC extends javax.swing.JPanel {
     }//GEN-LAST:event_txt_MSTKeyTyped
 
     private void tb_SupplierMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_SupplierMouseClicked
-        // TODO add your handling code here:
+        // TODO add your handling code here:                
+        btn_Update.setEnabled(true);
+        btn_Delete.setEnabled(true);
+
         int i = tb_Supplier.getSelectedRow();
         DefaultTableModel dtm = (DefaultTableModel) tb_Supplier.getModel();
         current_suggestName = dtm.getValueAt(i, 0).toString().trim();
@@ -537,15 +555,20 @@ public class QuanLyNCC extends javax.swing.JPanel {
         cb_Status.setSelectedItem(dtm.getValueAt(i, 4).toString());
 
         current_supplierID = ncc_data.name_to_ID(current_suggestName);
+
+        System.out.println(current_supplierID);
     }//GEN-LAST:event_tb_SupplierMouseClicked
 
     private void btn_UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_UpdateActionPerformed
-        // TODO add your handling code here:
-        action_QLNCC = "update";
+        // TODO add your handling code here:        
         int i = tb_Supplier.getSelectedRow();
         if (i < 0) {
             JOptionPane.showMessageDialog(this, "Chọn nhà cung cấp để sửa", "Input warning", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+        action_QLNCC = "update";
+        enableTXT();
+        btn_Save.setEnabled(true);
     }//GEN-LAST:event_btn_UpdateActionPerformed
 
     private void cbLocSPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbLocSPActionPerformed
