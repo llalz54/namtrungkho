@@ -1,15 +1,11 @@
 package namtrung.quanlykho;
 
+import DAO.Session;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,7 +25,6 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         applyDefaultUIStyle();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         // Lấy kích thước màn hình
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension baseSize = new Dimension(1500, 800); // kích thước thiết kế chuẩn
@@ -44,11 +39,11 @@ public class MainFrame extends javax.swing.JFrame {
         applyScaleFactor(scaleFactor);
 
         // Tính toán kích thước tối đa (90% màn hình hoặc 1500x800, tùy cái nào nhỏ hơn)
-      //  int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
-      //  int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
-
+        //  int maxWidth = Math.min(1500, (int) (screenSize.width * 0.9));
+        //  int maxHeight = Math.min(800, (int) (screenSize.height * 0.9));
         // Thiết lập kích thước
-    //    setSize(maxWidth, maxHeight);
+        //    setSize(maxWidth, maxHeight);
+        pack();
         setLocationRelativeTo(null); // căn giữa màn hình
 
         // Thiết lập icon
@@ -430,12 +425,12 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -569,7 +564,7 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(panelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 230, 800));
 
         panelShow.setBackground(new java.awt.Color(255, 255, 255));
-        panelShow.setPreferredSize(new java.awt.Dimension(1000, 700));
+        panelShow.setPreferredSize(new java.awt.Dimension(1200, 800));
 
         javax.swing.GroupLayout panelShowLayout = new javax.swing.GroupLayout(panelShow);
         panelShow.setLayout(panelShowLayout);
@@ -682,6 +677,7 @@ public class MainFrame extends javax.swing.JFrame {
         Login main = new Login();
         main.setVisible(true);
         this.setVisible(false);
+        Session.getInstance().clear();
     }//GEN-LAST:event_pn_LogoutMouseClicked
 
     private void pn_LogoutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pn_LogoutMouseExited
@@ -727,6 +723,7 @@ public class MainFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -752,6 +749,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 new MainFrame().setVisible(true);
             }

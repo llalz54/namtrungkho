@@ -1,6 +1,5 @@
 package namtrung.quanlykho;
 
-import ConDB.DBAccess;
 import DAO.NCC_DATA;
 import DAO.OTHER_DATA;
 import DAO.Session;
@@ -204,7 +203,6 @@ public class QuanLyNCC extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         cb_Status = new javax.swing.JComboBox<>();
         txt_Name = new javax.swing.JTextArea();
-        txt_diaChi = new javax.swing.JTextArea();
         txt_tenGoiNho = new javax.swing.JTextField();
         txt_MST = new javax.swing.JTextField();
         pn_button = new javax.swing.JPanel();
@@ -212,6 +210,8 @@ public class QuanLyNCC extends javax.swing.JPanel {
         btn_Delete = new javax.swing.JButton();
         btn_Save = new javax.swing.JButton();
         btn_Update = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txt_diaChi = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         tb_Supplier = new javax.swing.JTable();
         pn_TimKiem = new javax.swing.JPanel();
@@ -238,13 +238,6 @@ public class QuanLyNCC extends javax.swing.JPanel {
         txt_Name.setRows(3);
         txt_Name.setWrapStyleWord(true);
         txt_Name.setBorder(javax.swing.BorderFactory.createTitledBorder("Tên"));
-
-        txt_diaChi.setColumns(20);
-        txt_diaChi.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txt_diaChi.setLineWrap(true);
-        txt_diaChi.setRows(5);
-        txt_diaChi.setWrapStyleWord(true);
-        txt_diaChi.setBorder(javax.swing.BorderFactory.createTitledBorder("Địa chỉ"));
 
         txt_tenGoiNho.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txt_tenGoiNho.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tên gợi nhớ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 14))); // NOI18N
@@ -325,6 +318,14 @@ public class QuanLyNCC extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        txt_diaChi.setColumns(20);
+        txt_diaChi.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txt_diaChi.setLineWrap(true);
+        txt_diaChi.setRows(5);
+        txt_diaChi.setWrapStyleWord(true);
+        txt_diaChi.setBorder(javax.swing.BorderFactory.createTitledBorder("Địa chỉ"));
+        jScrollPane2.setViewportView(txt_diaChi);
+
         javax.swing.GroupLayout pn_funtionLayout = new javax.swing.GroupLayout(pn_funtion);
         pn_funtion.setLayout(pn_funtionLayout);
         pn_funtionLayout.setHorizontalGroup(
@@ -335,18 +336,17 @@ public class QuanLyNCC extends javax.swing.JPanel {
                 .addGap(75, 75, 75))
             .addGroup(pn_funtionLayout.createSequentialGroup()
                 .addGroup(pn_funtionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txt_diaChi, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(pn_funtionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(pn_funtionLayout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(txt_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pn_funtionLayout.createSequentialGroup()
-                            .addGap(17, 17, 17)
-                            .addGroup(pn_funtionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(pn_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(cb_Status, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txt_MST, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txt_tenGoiNho, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(pn_funtionLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(txt_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pn_funtionLayout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(pn_funtionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(pn_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cb_Status, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_MST, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_tenGoiNho, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(0, 23, Short.MAX_VALUE))
         );
         pn_funtionLayout.setVerticalGroup(
@@ -361,7 +361,7 @@ public class QuanLyNCC extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(txt_MST, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(txt_diaChi, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(cb_Status, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -593,6 +593,7 @@ public class QuanLyNCC extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel pn_TimKiem;
     private javax.swing.JPanel pn_button;
     private javax.swing.JPanel pn_funtion;

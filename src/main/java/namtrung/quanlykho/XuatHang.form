@@ -61,19 +61,11 @@
                           </Group>
                       </Group>
                       <Group type="102" attributes="0">
+                          <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                                  <Component id="tf_soLuong" min="-2" pref="201" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cb_GrProduct1" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tf_ngayXuat" max="32767" attributes="0"/>
-                              </Group>
+                              <Component id="tf_ngayXuat" max="32767" attributes="0"/>
+                              <Component id="tf_soLuong" pref="201" max="32767" attributes="0"/>
+                              <Component id="cb_GrProduct1" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -96,8 +88,8 @@
                                   </Group>
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="tf_DviXuat" alignment="1" min="-2" pref="235" max="-2" attributes="0"/>
-                                      <Component id="tf_ngayXuatHD" alignment="1" min="-2" pref="235" max="-2" attributes="0"/>
+                                      <Component id="tf_ngayXuatHD" min="-2" pref="235" max="-2" attributes="0"/>
+                                      <Component id="tf_DviXuat" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <Component id="tf_diaChi" max="32767" attributes="0"/>
@@ -248,7 +240,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cb_NCC1ActionPerformed"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;NCC&gt;"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JTextField" name="tf_giaXuat">
@@ -500,20 +492,6 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="tf_DviXuat">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Segoe UI" size="14" style="0"/>
-            </Property>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                <TitledBorder title="&#x110;&#x1a1;n V&#x1ecb; Xu&#x1ea5;t">
-                  <Font PropertyName="font" name="Segoe UI" size="16" style="1"/>
-                </TitledBorder>
-              </Border>
-            </Property>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JTextField" name="tf_ngayXuatHD">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -527,6 +505,33 @@
               </Border>
             </Property>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="tf_DviXuat">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="NAM TRUNG"/>
+                <StringItem index="1" value="THANH L&#xca;"/>
+                <StringItem index="2" value="H&#xc0;NG CHU&#x1ea8;N"/>
+              </StringArray>
+            </Property>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="&#x110;&#x1a1;n V&#x1ecb; Xu&#x1ea5;t">
+                  <Font PropertyName="font" name="Segoe UI" size="16" style="1"/>
+                </TitledBorder>
+              </Border>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tf_DviXuatActionPerformed"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

@@ -10,6 +10,8 @@ public class Login extends javax.swing.JFrame {
 
     public Login() {
         initComponents();
+
+         setLocationRelativeTo(null); // căn giữa màn hình
         setLocationRelativeTo(null);
         getRootPane().setDefaultButton(btnLogin);
          try {
@@ -120,6 +122,7 @@ public class Login extends javax.swing.JFrame {
                 String roleFromDB = rs.getString("role");
                 Session.getInstance().setUser(userIdFromDB, usernameFromDB, roleFromDB);
                 MainFrame main = new MainFrame();
+                main.setResizable(false);
                 main.setVisible(true);
                 this.setVisible(false);
             } else {

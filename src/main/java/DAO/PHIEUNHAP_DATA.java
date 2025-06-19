@@ -28,11 +28,13 @@ public class PHIEUNHAP_DATA {
             while (rs.next()) {
                 PHIEUNHAP px = new PHIEUNHAP();
                 px.setIdpn(rs.getInt("idpn"));
+                px.setHoaDon(rs.getString("soHoaDon"));
                 px.setTenLoai(rs.getString("tenLoai").trim());
                 px.setQuantity(rs.getInt("quantity"));
                 px.setPrice(rs.getLong("price"));
                 px.setNgayNhap(rs.getString("ngayNhap"));
                 px.setSupplier(rs.getString("tenNCC").trim());
+                px.setDiaChiKho(rs.getString("diaChiKho"));
                 dssp.add(px);
 
             }
