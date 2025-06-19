@@ -34,7 +34,6 @@ public class QuanLyKho extends javax.swing.JPanel {
         OTHER_DATA.customTable(tb_DSSP);
         OTHER_DATA.customTable(tb_DSSP_Serial);
         //loadCB_Status();
-        customControls();
     }
 
     private SANPHAM_DATA sanpham_data = new SANPHAM_DATA();
@@ -55,26 +54,6 @@ public class QuanLyKho extends javax.swing.JPanel {
         if (!"admin".equalsIgnoreCase(role)) {
             pn_QLSP.setVisible(false);
         }
-    }
-
-    private void customControls() {
-        tfTimKiem.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                btn_Search.doClick();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                btn_Search.doClick();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                btn_Search.doClick();
-            }
-        });
-        btn_Search.setVisible(false);
     }
 
     private void completeSave() {
@@ -203,6 +182,62 @@ public class QuanLyKho extends javax.swing.JPanel {
             }
         } catch (Exception e) {
             System.out.println("Lỗi lấy danh sách sản phẩm - Serial!");
+            e.printStackTrace();
+        }
+        tb_DSSP_Serial.setModel(dtm);
+    }
+    
+    
+    private void loadSerial_Search(String serial) {
+        NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        DefaultTableModel dtm = (DefaultTableModel) tb_DSSP_Serial.getModel();
+        dtm.setNumRows(0);
+        String query
+                = "SELECT \n"
+                + "    fp.ngayNhap,\n"
+                + "    sp.serial,\n"
+                + "    fp.name,\n"
+                + "    fp.price,\n"
+                + "    sp.start_date,\n"
+                + "    sp.end_date\n"
+                + "FROM SanPham sp\n"
+                + "CROSS APPLY (\n"
+                + "    SELECT TOP 1\n"
+                + "        pn.ngayNhap,\n"
+                + "        pn.price,\n"
+                + "        s.name\n"
+                + "    FROM CTPN ct\n"
+                + "    INNER JOIN PhieuNhap pn ON ct.idpn = pn.idpn\n"
+                + "    INNER JOIN NCC s ON pn.supplier_id = s.supplier_id\n"
+                + "    WHERE ct.serial = sp.serial\n"
+                + "    ORDER BY pn.ngayNhap ASC\n"
+                + ") AS fp\n"
+                + "WHERE sp.serial LIKE ?\n"
+                + "ORDER BY fp.ngayNhap ASC;";
+
+        try (Connection conn = CONNECTION.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, "%" + serial + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            boolean hasData = false;
+            while (rs.next()) {
+                hasData = true;
+                Object[] row = new Object[]{
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    vnFormat.format(rs.getLong(4)),
+                    rs.getString(5),
+                    rs.getString(6)
+                };
+                dtm.addRow(row);
+            }
+            if (!hasData) {
+                JOptionPane.showMessageDialog(null, "Không có Serial nào phù hợp!");
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi tìm kiếm sản phẩm - Serial!");
             e.printStackTrace();
         }
         tb_DSSP_Serial.setModel(dtm);
@@ -455,6 +490,7 @@ public class QuanLyKho extends javax.swing.JPanel {
             }
         });
 
+        btn_Search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/search.png"))); // NOI18N
         btn_Search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SearchActionPerformed(evt);
@@ -469,25 +505,27 @@ public class QuanLyKho extends javax.swing.JPanel {
                 .addGap(16, 16, 16)
                 .addComponent(cbLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(tfTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                .addComponent(btn_LayDS)
-                .addGap(18, 18, 18)
-                .addComponent(btn_Search, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(tfTimKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(btn_Search, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(btn_LayDS, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         pn_TimKiemLayout.setVerticalGroup(
             pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pn_TimKiemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btn_Search, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tfTimKiem, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btn_Search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(pn_TimKiemLayout.createSequentialGroup()
+                            .addGap(0, 0, Short.MAX_VALUE)
+                            .addComponent(btn_LayDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(pn_TimKiemLayout.createSequentialGroup()
-                        .addGap(0, 1, Short.MAX_VALUE)
-                        .addGroup(pn_TimKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btn_LayDS, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 3, Short.MAX_VALUE)
+                        .addComponent(cbLocSP, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfTimKiem))
                 .addGap(14, 14, 14))
         );
 
@@ -655,7 +693,8 @@ public class QuanLyKho extends javax.swing.JPanel {
 
     private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SearchActionPerformed
         // TODO add your handling code here:
-        sanpham_data.getSPtheoSerial(tfTimKiem.getText().trim());
+        String serial = tfTimKiem.getText().toString().trim();
+        loadSerial_Search(serial);
     }//GEN-LAST:event_btn_SearchActionPerformed
 
 

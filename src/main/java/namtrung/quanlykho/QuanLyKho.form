@@ -416,12 +416,12 @@
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   <Component id="cbLocSP" min="-2" pref="109" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="tfTimKiem" min="-2" pref="434" max="-2" attributes="0"/>
-                  <EmptySpace pref="51" max="32767" attributes="0"/>
-                  <Component id="btn_LayDS" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btn_Search" min="-2" pref="6" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="tfTimKiem" min="-2" pref="360" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                  <Component id="btn_Search" min="-2" pref="48" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                  <Component id="btn_LayDS" min="-2" pref="182" max="-2" attributes="0"/>
+                  <EmptySpace pref="25" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -430,15 +430,18 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="btn_Search" alignment="0" max="32767" attributes="0"/>
-                      <Component id="tfTimKiem" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="0" pref="1" max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="btn_Search" alignment="1" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               <Component id="btn_LayDS" min="-2" pref="42" max="-2" attributes="0"/>
-                              <Component id="cbLocSP" min="-2" pref="40" max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="0" pref="3" max="32767" attributes="0"/>
+                          <Component id="cbLocSP" min="-2" pref="40" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="tfTimKiem" alignment="1" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               </Group>
@@ -484,6 +487,11 @@
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_Search">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/search.png"/>
+            </Property>
+          </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_SearchActionPerformed"/>
           </Events>

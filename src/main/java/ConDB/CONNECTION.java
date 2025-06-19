@@ -14,6 +14,7 @@ public class CONNECTION {
                    + "encrypt=true; trustServerCertificate=true;sslProtocol=TLSv1.2";
          //  String URL = "jdbc:sqlserver://localhost:1433;DatabaseName=QLKHO;user=sa;password=123;"
             //       + "encrypt=true; trustServerCertificate=true;sslProtocol=TLSv1.2";
+
             Connection con = DriverManager.getConnection(URL);
             return con;
         } catch (SQLException ex) {
