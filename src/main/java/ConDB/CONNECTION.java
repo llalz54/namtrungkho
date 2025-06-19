@@ -8,7 +8,8 @@ import javax.swing.JOptionPane;
 public class CONNECTION {
 
     public static Connection getConnection() {
-        try {
+        try {            
+            
             String URL = "jdbc:sqlserver://10.10.1.250:1433;DatabaseName=QLKHO;user=sa;password=thongAd@12345;"
                     + "encrypt=true; trustServerCertificate=true;sslProtocol=TLSv1.2";
 
