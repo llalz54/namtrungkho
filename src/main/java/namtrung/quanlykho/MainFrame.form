@@ -46,6 +46,10 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
+<<<<<<< HEAD
+=======
+              <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+>>>>>>> 398b4da06b9ab54d99e417bbdd58ab105b35a06c
               <Group type="102" alignment="1" attributes="0">
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="pn_Logout" max="32767" attributes="0"/>
@@ -63,7 +67,10 @@
                   <Component id="pn_OpenNhap" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
+<<<<<<< HEAD
               <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+=======
+>>>>>>> 398b4da06b9ab54d99e417bbdd58ab105b35a06c
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -600,14 +607,14 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="226" y="0" width="1270" height="790"/>
+          <AbsoluteConstraints x="236" y="0" width="1260" height="790"/>
         </Constraint>
       </Constraints>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="1270" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="1260" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">

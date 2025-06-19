@@ -2,6 +2,7 @@ package namtrung.quanlykho;
 
 import ConDB.DBAccess;
 import DAO.Session;
+import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -123,6 +124,7 @@ public class Login extends javax.swing.JFrame {
                 Session.getInstance().setUser(userIdFromDB, usernameFromDB, roleFromDB);
                 MainFrame main = new MainFrame();
                 main.setResizable(false);
+                main.getContentPane().setBackground(Color.WHITE);
                 main.setVisible(true);
                 this.setVisible(false);
             } else {

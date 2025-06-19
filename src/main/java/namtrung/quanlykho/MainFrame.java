@@ -77,6 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
         panel.setPreferredSize(new Dimension((int) (1200 * scaleFactor), (int) (800 * scaleFactor)));
         
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -502,6 +503,10 @@ public class MainFrame extends javax.swing.JFrame {
         panelMenu.setLayout(panelMenuLayout);
         panelMenuLayout.setHorizontalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+<<<<<<< HEAD
+=======
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+>>>>>>> 398b4da06b9ab54d99e417bbdd58ab105b35a06c
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMenuLayout.createSequentialGroup()
                 .addGroup(panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pn_Logout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -516,7 +521,10 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(panelMenuLayout.createSequentialGroup()
                 .addComponent(pn_OpenNhap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+<<<<<<< HEAD
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+=======
+>>>>>>> 398b4da06b9ab54d99e417bbdd58ab105b35a06c
         );
         panelMenuLayout.setVerticalGroup(
             panelMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -552,14 +560,14 @@ public class MainFrame extends javax.swing.JFrame {
         panelShow.setLayout(panelShowLayout);
         panelShowLayout.setHorizontalGroup(
             panelShowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1270, Short.MAX_VALUE)
+            .addGap(0, 1260, Short.MAX_VALUE)
         );
         panelShowLayout.setVerticalGroup(
             panelShowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 790, Short.MAX_VALUE)
         );
 
-        getContentPane().add(panelShow, new org.netbeans.lib.awtextra.AbsoluteConstraints(226, 0, 1270, 790));
+        getContentPane().add(panelShow, new org.netbeans.lib.awtextra.AbsoluteConstraints(236, 0, 1260, 790));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
